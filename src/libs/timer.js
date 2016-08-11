@@ -1,6 +1,10 @@
 //all times are in ms
 var Timer = {};
 
+Timer.update = function() {
+	
+}
+
 Timer.after = function(interval, func) {
 	return window.setTimeout(func, interval);
 };
