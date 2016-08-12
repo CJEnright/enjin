@@ -26,12 +26,12 @@ Camera.prototype.unfocus = function() {
 	enjin.ctx.restore();
 }
 
-Camera.prototype.lookAt = function(x, y) {
+Camera.prototype.moveTo = function(x, y) {
  	this.x = x;
  	this.y = y;
 }
 
-Camera.prototype.moveTo = function(dx, dy) {
+Camera.prototype.move = function(dx, dy) {
 	this.x = this.x + dx;
 	this.y = this.y + dy;
 }
@@ -43,14 +43,6 @@ Camera.prototype.getPosition = function() {
 	};
 }
 
-Camera.prototype.getX = function() {
-	return this.x;
-}
-
-Camera.prototype.getY = function() {
-	return this.y;
-}
-
 Camera.prototype.rotate = function(rad) {
 	this.rotation = this.rotation + rad;
 }
@@ -59,20 +51,12 @@ Camera.prototype.rotateTo = function(rad) {
 	this.rotation = rad;
 }
 
-Camera.prototype.getRotation = function(rad) {
-	return this.rotation;
-}
-
 Camera.prototype.scale = function(scalar) {
 	this.scale = this.scale * scalar;
 }
 
 Camera.prototype.scaleTo = function(scale) {
 	this.scale = scale;
-}
-
-Camera.prototype.getScale = function(scale) {
-	return this.scale;
 }
 
 Camera.prototype.toWorldCoords = function(x, y) {
