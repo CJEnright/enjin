@@ -3,8 +3,9 @@
 //however the others will help a lot
 window.enjin = {};
 
-enjin.camera = require('./libs/camera'); //k
+enjin.Camera = require('./libs/camera'); //k
 enjin.timer = require('./libs/timer');
+enjin.State = require('./libs/state');
 enjin.collision = require('./libs/collision'); //n
 //enjin.network = require('./libs/network');
 
@@ -31,7 +32,10 @@ enjin.init = function(canvas) {
  * Call initial frame
  */
 enjin.start = function() {
-	if(enjin.update) {
+	if(typeof enjin.load === "function") {
+		enjin.load();
+	}
+	if(typeof enjin.update === "function") {
 		enjin.prev = performance.now();
 		enjin.frameID = requestAnimFrame(enjin.loop);
 	}
@@ -42,8 +46,13 @@ enjin.start = function() {
  */
 enjin.loop = function() { 
 	enjin.now = performance.now();
-	enjin.dt = enjin.now - enjin.prev;
+	enjin.dt = (enjin.now - enjin.prev)/1000;
 	enjin.prev = enjin.now;
+
+	ctx.save();
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	enjin.ctx.clearRect(0, 0, enjin.canvas.width, enjin.canvas.height)
+	ctx.restore();
 
 	enjin.update(enjin.dt);
 	enjin.draw(enjin.dt);
@@ -78,7 +87,7 @@ window.performance.now = performance.now
 	|| performance.msNow
 	|| performance.mozNow
 	|| function() { return Date.now() || +(new Date()); };
-},{"./libs/camera":2,"./libs/collision":3,"./libs/timer":4}],2:[function(require,module,exports){
+},{"./libs/camera":2,"./libs/collision":3,"./libs/state":4,"./libs/timer":5}],2:[function(require,module,exports){
 /**
  * Create a new Camera instance
  * @param {Object} Params Params to start camera off with
@@ -269,6 +278,8 @@ collision.circle = function(obj1, obj2) {
 
 module.exports = collision;
 },{}],4:[function(require,module,exports){
+
+},{}],5:[function(require,module,exports){
 //all times are in ms
 var Timer = {};
 

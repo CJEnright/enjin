@@ -3,12 +3,6 @@ var canvas = document.getElementById("gameCanvas"),
 
 enjin.init(canvas);
 
-enjin.update = function(dt) {
-	//console.log(dt);
-}
-
-enjin.start();
-/*
 var player = {
 	x: 20, 
 	y: 20,
@@ -23,7 +17,7 @@ var player2 = {
 var camera;
 
 var background = new Image();
-background.src = "./pic.jpg"//"http://www.strandedsoft.com/contenidos/uploads/2015/03/Captura-de-pantalla-2015-03-09-a-las-21.17.30.png";
+background.src = "http://www.strandedsoft.com/contenidos/uploads/2015/03/Captura-de-pantalla-2015-03-09-a-las-21.17.30.png";
 
 //register functions
 enjin.load = function() {
@@ -34,7 +28,7 @@ enjin.load = function() {
 		speedy: 50
 	};
 
-	camera = new enjin.camera(player.x, player.y)
+	camera = new enjin.Camera(player.x, player.y)
 }
 
 enjin.update = function(dt) {
@@ -44,22 +38,21 @@ enjin.update = function(dt) {
 	player2.x += Math.random() * player.speedx * dt;
 	player2.y += Math.random() * player.speedy * dt;
 
-	camera.lookAt(player.x, player.y);
+	camera.moveTo(player.x, player.y);
 }
 
 enjin.draw = function() {
-	camera.focus();
+	camera.attach();
 
-	ctx.drawImage(background,0,0); 
+	ctx.drawImage(background, 0, 0); 
 	ctx.fillRect(player.x, player.y, 10, 10);
 	ctx.fillRect(player2.x, player2.y, 10, 10);
 
-	camera.unfocus();
+	camera.remove();
 }
 
 //start looping
 enjin.start()
-*/
 
 
 

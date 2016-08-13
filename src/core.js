@@ -2,7 +2,7 @@
 //however the others will help a lot
 window.enjin = {};
 
-enjin.camera = require('./libs/camera'); //k
+enjin.Camera = require('./libs/camera'); //k
 enjin.timer = require('./libs/timer');
 enjin.collision = require('./libs/collision'); //n
 //enjin.network = require('./libs/network');
@@ -30,7 +30,10 @@ enjin.init = function(canvas) {
  * Call initial frame
  */
 enjin.start = function() {
-	if(enjin.update) {
+	if(typeof enjin.load === "function") {
+		enjin.load();
+	}
+	if(typeof enjin.update === "function") {
 		enjin.prev = performance.now();
 		enjin.frameID = requestAnimFrame(enjin.loop);
 	}
@@ -41,8 +44,13 @@ enjin.start = function() {
  */
 enjin.loop = function() { 
 	enjin.now = performance.now();
-	enjin.dt = enjin.now - enjin.prev;
+	enjin.dt = (enjin.now - enjin.prev)/1000;
 	enjin.prev = enjin.now;
+
+	ctx.save();
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	enjin.ctx.clearRect(0, 0, enjin.canvas.width, enjin.canvas.height)
+	ctx.restore();
 
 	enjin.update(enjin.dt);
 	enjin.draw(enjin.dt);
