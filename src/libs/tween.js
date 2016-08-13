@@ -1,4 +1,4 @@
-//tween is require, something should execute that adds 
+/*//tween is require, something should execute that adds 
 var Tween =  {
 	tweens: [],
 	_count: 0,
@@ -49,7 +49,7 @@ Tween.update = function(dt) {
 		}
 	}
 };*/
-
+/*
 module.exports = Tween;
 
 enjin.moduleUpdates.push(function(dt) {

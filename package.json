@@ -5,15 +5,12 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "browserify ./src/main.js > ./public/enjin.js",
-    "doxx": "doxx --source main --target docs --theme cayman"
+    "start": "browserify ./src/core.js > ./public/enjin.js",
+    "docs": "mr-doc -s src/ -o docs/"
   },
   "author": "C.J. Enright",
   "license": "ISC",
   "dependencies": {
     "browserify": "^13.0.1"
-  },
-  "devDependencies": {
-    "doxx": "^2.1.1"
   }
 }

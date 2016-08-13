@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" charset="utf-8">
+    <title>mr-doc</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/cayman.min.css">
+    <link rel="stylesheet" href="../css/prism.min.css">
+    <link rel="stylesheet" href="../css/index.min.css">
+    <link rel="stylesheet" href="../css/docs.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-responsive.min.css">
+  </head>
+  <body data-spy="scroll" data-target=".scrollspy">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container"><a class="brand">Mr. Doc</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right sponsored"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header id="overview" class="jumbotron subhead">
+      <div class="container">
+        <h1>mr-doc</h1>
+        <p class="lead"></p>
+      </div>
+    </header>
+    <div class="container">
+      <div class="row">
+        <div class="span3 bs-docs-sidebar">
+          <ul class="nav nav-list bs-docs-sidenav affix-top">
+            <li><a href="../index.html">Main</a></li>
+            <li><a href="../core.js.html">core.js</a></li>
+            <li><a href="../libs/camera.js.html">libs/camera.js</a></li>
+            <li><a href="../libs/collision.js.html">libs/collision.js</a></li>
+            <li><a href="../libs/ecs.js.html">libs/ecs.js</a></li>
+            <li><a href="../libs/entity.js.html">libs/entity.js</a></li>
+            <li><a href="../libs/physics.js.html">libs/physics.js</a></li>
+            <li><a href="../libs/text.js.html">libs/text.js</a></li>
+            <li><a href="../libs/timer.js.html">libs/timer.js</a></li>
+            <li class="active"><a href="../libs/tween.js.html">libs/tween.js</a></li>
+          </ul>
+          <div class="scrollspy">
+            <ul class="nav nav-list bs-docs-sidenav affix-top">
+              <li><a href="#exports"><i class="alert alert-success"></i><span>exports</span></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="span9">
+          <section id="exports">
+            <h1>exports</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">property</div><span>&nbsp;</span><span>module.exports</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <div class="description"><p>Tween.update = function(dt) {<br />    for(var i = 0; i &lt; this.tweens.length; i++) {<br />        this.tweens[i].time -= dt;</p><pre><code>    //updating actual values will be hard
+    //this.tweens[i].initial =         
+
+    if(this.tweens[i].time &lt;= 0){
+        this.tweens[i].finished();
+        //remove it from the array
+        this.tweens.splice(i, 1);
+    }
+}
+</code></pre><p>};</p></div>
+          <pre><code class="language-javascript">module.exports = Tween;
+
+enjin.moduleUpdates.push(function(dt) {
+	for(var i = 0; i &lt; enjin.tween.tweens.length; i++) {
+		enjin.tween.tweens[i].time -= dt;
+
+		//updating actual values will be hard  
+		enjin.tween.tweens[i].initial = 
+
+		if(enjin.tween.tweens[i].time &lt;= 0){
+			enjin.tween.tweens[i].finished();
+			//remove it from the array
+			enjin.tween.tweens.splice(i, 1);
+		}
+	}
+});</code></pre>
+          <div class="description"><p>local Timer = {}<br />Timer.__index = Timer</p><p>local function <em>nothing</em>() end</p><p>function Timer:update(dt)<br />    local to_remove = {}<br />    for handle, delay in pairs(self.functions) do<br />        delay = delay - dt<br />        if delay &lt;= 0 then<br />            to_remove[#to<em>remove+1] = handle<br />        end<br />        self.functions[handle] = delay<br />        handle.func(dt, delay)<br />    end<br />    for </em>,handle in ipairs(to_remove) do<br />        self.functions[handle] = nil<br />        handle.after(handle.after)<br />    end<br />end</p><p>function Timer:during(delay, func, after)<br />    local handle = {func = func, after = after or <em>nothing</em>}<br />    self.functions[handle] = delay<br />    return handle<br />end</p><p>function Timer:after(delay, func)<br />    return self:during(delay, <em>nothing</em>, func)<br />end</p><p>function Timer:every(delay, func, count)<br />    local count, handle = count or math.huge -- exploit below: math.huge - 1 = math.huge</p><pre><code>handle = self:after(delay, function(f)
+    if func(func) == false then return end
+    count = count - 1
+    if count &gt; 0 then
+        self.functions[handle] = delay
+    end
+end)
+return handle
+</code></pre><p>end</p><p>function Timer:cancel(handle)<br />    self.functions[handle] = nil<br />end</p><p>function Timer:clear()<br />    self.functions = {}<br />end</p><p>function Timer:script(f)<br />    local co = coroutine.wrap(f)<br />    co(function(t)<br />        self:after(t, co)<br />        coroutine.yield()<br />    end)<br />end</p><p>Timer.tween = setmetatable({<br />    -- helper functions<br />    out = function(f) -- &#39;rotates&#39; a function<br />        return function(s, ...) return 1 - f(1-s, ...) end<br />    end,<br />    chain = function(f1, f2) -- concatenates two functions<br />        return function(s, ...) return (s &lt; .5 and f1(2<em>s, ...) or 1 + f2(2</em>s-1, ...)) * .5 end<br />    end,</p><pre><code>-- useful tweening functions
+linear = function(s) return s end,
+quad   = function(s) return s*s end,
+cubic  = function(s) return s*s*s end,
+quart  = function(s) return s*s*s*s end,
+quint  = function(s) return s*s*s*s*s end,
+sine   = function(s) return 1-math.cos(s*math.pi/2) end,
+expo   = function(s) return 2^(10*(s-1)) end,
+circ   = function(s) return 1 - math.sqrt(1-s*s) end,
+
+back = function(s,bounciness)
+    bounciness = bounciness or 1.70158
+    return s*s*((bounciness+1)*s - bounciness)
+end,
+
+bounce = function(s) -- magic numbers ahead
+    local a,b = 7.5625, 1/2.75
+    return math.min(a*s^2, a*(s-1.5*b)^2 + .75, a*(s-2.25*b)^2 + .9375, a*(s-2.625*b)^2 + .984375)
+end,
+
+elastic = function(s, amp, period)
+    amp, period = amp and math.max(1, amp) or 1, period or .3
+    return (-amp * math.sin(2*math.pi/period * (s-1) - math.asin(1/amp))) * 2^(10*(s-1))
+end,
+</code></pre><p>}, {</p><p>-- register new tween<br />__call = function(tween, self, len, subject, target, method, after, ...)<br />    -- recursively collects fields that are defined in both subject and target into a flat list<br />    local function tween_collect_payload(subject, target, out)<br />        for k,v in pairs(target) do<br />            local ref = subject[k]<br />            assert(type(v) == type(ref), &#39;Type mismatch in field &quot;&#39;..k..&#39;&quot;.&#39;)<br />            if type(v) == &#39;table&#39; then<br />                tween_collect_payload(ref, v, out)<br />            else<br />                local ok, delta = pcall(function() return (v-ref)*1 end)<br />                assert(ok, &#39;Field &quot;&#39;..k..&#39;&quot; does not support arithmetic operations&#39;)<br />                out[#out+1] = {subject, k, delta}<br />            end<br />        end<br />        return out<br />    end</p><pre><code>method = tween[method or &#39;linear&#39;] -- see __index
+local payload, t, args = tween_collect_payload(subject, target, {}), 0, {...}
+
+local last_s = 0
+return self:during(len, function(dt)
+    t = t + dt
+    local s = method(math.min(1, t/len), unpack(args))
+    local ds = s - last_s
+    last_s = s
+    for _, info in ipairs(payload) do
+        local ref, key, delta = unpack(info)
+        ref[key] = ref[key] + delta * ds
+    end
+end, after)
+</code></pre><p>end,</p><p>-- fetches function and generated compositions for method <code>key</code><br />__index = function(tweens, key)<br />    if type(key) == &#39;function&#39; then return key end</p><pre><code>assert(type(key) == &#39;string&#39;, &#39;Method must be function or string.&#39;)
+if rawget(tweens, key) then return rawget(tweens, key) end
+
+local function construct(pattern, f)
+    local method = rawget(tweens, key:match(pattern))
+    if method then return f(method) end
+    return nil
+end
+
+local out, chain = rawget(tweens,&#39;out&#39;), rawget(tweens,&#39;chain&#39;)
+return construct(&#39;^in%-([^-]+)$&#39;, function(...) return ... end)
+       or construct(&#39;^out%-([^-]+)$&#39;, out)
+       or construct(&#39;^in%-out%-([^-]+)$&#39;, function(f) return chain(f, out(f)) end)
+       or construct(&#39;^out%-in%-([^-]+)$&#39;, function(f) return chain(out(f), f) end)
+       or error(&#39;Unknown interpolation method: &#39; .. key)
+</code></pre><p>end})</p><p>-- the module<br />local function new()<br />    local timer = setmetatable({functions = {}, tween = Timer.tween}, Timer)<br />    return setmetatable({<br />        new    = new,<br />        update = function(...) return timer:update(...) end,<br />        during = function(...) return timer:during(...) end,<br />        after  = function(...) return timer:after(...) end,<br />        every  = function(...) return timer:every(...) end,<br />        script = function(...) return timer:script(...) end,<br />        cancel = function(...) return timer:cancel(...) end,<br />        clear  = function(...) return timer:clear(...) end,<br />        tween  = setmetatable({}, {<br />            <strong>index    = Timer.tween,
+            </strong>newindex = function(_,k,v) Timer.tween[k] = v end,<br />            <strong>call     = function(t,...) return timer:tween(...) end,<br />        })<br />    }, {</strong>call = new})<br />end</p><p>return new()</p></div>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p>Documentation generated with <a href="https://github.com/mr-doc/mr-doc">Mr. Doc </a> created by <a href="https://twitter.com/FGRibreau" data-show-count="false" class="twitter-follow-button">Francois-Guillaume Ribreau </a></p>
+        <p>Mr. Doc is sponsored by <a href="http://bringr.net/?btt" title="Outil d'analyse des réseaux sociaux" class="bringr">Bringr </a> and <a href="https://redsmin.com/?btt" title="Full Redis GUI" class="redsmin">Redsmin</a></p>
+        <p>Theme borrowed from Twitter Bootstrap</p>
+      </div>
+    </footer>
+    <script src="../js/twitter-widget.min.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/bootstrap-transition.min.js"></script>
+    <script src="../js/bootstrap-scrollspy.min.js"></script>
+    <script src="../js/bootstrap-dropdown.min.js"></script>
+    <script src="../js/bootstrap-collapse.min.js"></script>
+    <script src="../js/bootstrap-affix.min.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <script src="../js/index.min.js"></script>
+  </body>
+</html>

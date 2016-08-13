@@ -1,56 +1,79 @@
-function enjin(canvas) {
-	this.canvas = canvas;
-	this.ctx = canvas.getRenderingContext("2d");
+//you can make a game with these functions alone
+//however the others will help a lot
+window.enjin = {};
+
+enjin.camera = require('./libs/camera'); //k
+enjin.timer = require('./libs/timer');
+enjin.collision = require('./libs/collision'); //n
+//enjin.network = require('./libs/network');
+
+/**
+ * Initialize necessary values for enjin
+ * @param {Object} Canvas Canvas for game to be played on
+ */
+enjin.init = function(canvas) {
+	enjin.version = "0.0.1";
+	enjin.canvas = canvas;
+	enjin.ctx = enjin.canvas.getContext("2d");
+	enjin.delay = 1000/60;
+
+	enjin.update = function(dt) {
+		//default game
+	}
+
+	enjin.draw = function() {
+		//default game
+	}
 }
 
-enjin.prototype.version = "0.0.1";
+/**
+ * Call initial frame
+ */
+enjin.start = function() {
+	if(enjin.update) {
+		enjin.prev = performance.now();
+		enjin.frameID = requestAnimFrame(enjin.loop);
+	}
+}
 
-/*		----------[Essential Packages]----------		*/
-enjin.prototype.timer = require('./libs/timer');
-//do i want a state thing? 
-enjin.prototype.state = require('./libs/state');
+/**
+ * Loop to be called by requestAnimFrame
+ */
+enjin.loop = function() { 
+	enjin.now = performance.now();
+	enjin.dt = enjin.now - enjin.prev;
+	enjin.prev = enjin.now;
 
-/*		----------[Non-Essential Packages]----------		*/
-enjin.prototype.camera = require('./libs/camera'); //k
-enjin.prototype.collision = require('./libs/collision'); //n
+	enjin.update(enjin.dt);
+	enjin.draw(enjin.dt);
+	
+	//this thing is pretty smart, it should use the monitors refresh rate as the fps
+	enjin.frameID = requestAnimFrame(enjin.loop)
+}
 
-/*
-General notes:
-enjin should be createable
-window.enjin = enjin?
+/**
+ * Stop calling requestAnimFrame
+ */
+enjin.stop = function() {
+	cancelAnimFrame(enjin.frameID);
+}
 
- window.getTime = (function() {
- 73     var origin;
- 74     if (window.performance && window.performance.now) {
- 75         origin = Date.now();
- 76         return function() {
- 77             return origin + window.performance.now();
- 78         };
- 79     } else if (window.performance && window.performance.webkitNow) {
- 80         origin = Date.now();
- 81         return function() {
- 82             return origin + window.performance.webkitNow();
- 83         };
- 84     } else {
- 85         return Date.now;
- 86     }
- 87 }());
+window.requestAnimFrame = window.requestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || window.mozRequestAnimationFrame 
+    || window.oRequestAnimationFrame  
+    || function(callback) { return window.setTimeout(callback, enjin.delay); }; 
 
+window.cancelAnimFrame = window.cancelAnimationFrame
+    || window.webkitCancelAnimationFrame 
+    || window.msCancelAnimationFrame 
+    || window.mozCancelAnimationFrame 
+    || window.oCancelAnimationFrame 
+    || function(id) { clearTimeout(id); };
 
-  window.requestAnimationFrame =
- 91     window.requestAnimationFrame ||
- 92     window.mozRequestAnimationFrame ||
- 93     window.webkitRequestAnimationFrame ||
- 94     window.msRequestAnimationFrame ||
- 95     (function() {
- 96         var lastTime = window.getTime();
- 97         var frame = 1000 / 60;
- 98         return function(func) {
- 99             var _id = setTimeout(function() {
-100                 lastTime = window.getTime();
-101                 func(lastTime);
-102             }, Math.max(0, lastTime + frame - window.getTime()));
-103             return _id;
-104         };
-105     }());
-*/
+window.performance.now = performance.now
+	|| performance.webkitNow
+	|| performance.msNow
+	|| performance.mozNow
+	|| function() { return Date.now() || +(new Date()); };

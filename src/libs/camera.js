@@ -1,5 +1,8 @@
-//using x=x+y because its faster is most cases
-//are get methods really needed?
+/**
+ * Create a new Camera instance
+ * @param {Object} Params Params to start camera off with
+ * @return {Object} A Camera Object with the given Params
+ */
 var Camera = function(params) {
 	//Movement interpolators (for camera locking/windowing)
 	this.smooth = {};
@@ -10,7 +13,10 @@ var Camera = function(params) {
 	this.rotation  = params.rotation || 0;
 }
 
-Camera.prototype.focus = function() {
+/**
+ * Apply Camera's positioning
+ */
+Camera.prototype.attach = function() {
 	var centerX = enjin.canvas.width/(2*this.scale),
 		centerY = enjin.canvas.height/(2*this.scale);
 
@@ -21,45 +27,73 @@ Camera.prototype.focus = function() {
 	enjin.ctx.translate(-this.x, -this.y);
 }
 
-Camera.prototype.unfocus = function() {
+/**
+ * Remove Camera's positioning
+ */
+Camera.prototype.remove = function() {
 	//save and restore use a stack so it should be good
 	enjin.ctx.restore();
 }
 
+/**
+ * Move Camera to a specific coordinate
+ * @param {Number} X X coordinate of Camera
+ * @param {Number} Y Y coordinate of Camera
+ */
 Camera.prototype.moveTo = function(x, y) {
  	this.x = x;
  	this.y = y;
 }
 
+/**
+ * Move Camera a certain distance
+ * @param {Number} DX Distance to move in the X direction
+ * @param {Number} DY Distance to move in the Y direction
+ */
 Camera.prototype.move = function(dx, dy) {
 	this.x = this.x + dx;
 	this.y = this.y + dy;
 }
 
-Camera.prototype.getPosition = function() {
-	return {
-		x: this.x, 
-		y: this.y
-	};
-}
-
+/**
+ * Rotate Camera a certain amount in radians
+ * @param {Number} Radians Amount to rotate in radians
+ */
 Camera.prototype.rotate = function(rad) {
 	this.rotation = this.rotation + rad;
 }
 
+/**
+ * Rotate Camera to a specific value
+ * @param {Number} Radians Radians to rotate to
+ */
 Camera.prototype.rotateTo = function(rad) {
 	this.rotation = rad;
 }
 
+/**
+ * Scale Camera a certain amount
+ * @param {Number} Scalar Number to multiply the Camera's scale by
+ */
 Camera.prototype.scale = function(scalar) {
 	this.scale = this.scale * scalar;
 }
 
+/**
+ * Scale Camera to a specific value
+ * @param {Number} Scale Number to scale Camera to
+ */
 Camera.prototype.scaleTo = function(scale) {
 	this.scale = scale;
 }
 
-Camera.prototype.toWorldCoords = function(x, y) {
+/**
+ * Convert Camera coordinates to Map coordinates
+ * @param {Number} X X coordinate of camera you wish to convert
+ * @param {Number} X Y coordinate of camera you wish to convert
+ * @return {Object} X and Y value in Map coordinates
+ */
+Camera.prototype.toMapCoords = function(x, y) {
 	x = (x - this.canvas.getWidth/2) / this.scale;
 	y = (y - this.canvas.getHeight/2) / this.scale;
 
@@ -75,6 +109,12 @@ Camera.prototype.toWorldCoords = function(x, y) {
 	}
 }
 
+/**
+ * Convert Map coordinates to Camera coordinates
+ * @param {Number} X X coordinate of Map you wish to convert
+ * @param {Number} Y Y coordinate of Map you wish to convert
+ * @return {Object} X and Y value in Camera coordinates
+ */
 Camera.prototype.toCameraCoords = function(x, y) {
 	x = x - this.x;
 	y = y - this.y;

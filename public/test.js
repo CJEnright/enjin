@@ -3,6 +3,12 @@ var canvas = document.getElementById("gameCanvas"),
 
 enjin.init(canvas);
 
+enjin.update = function(dt) {
+	//console.log(dt);
+}
+
+enjin.start();
+/*
 var player = {
 	x: 20, 
 	y: 20,
@@ -53,7 +59,7 @@ enjin.draw = function() {
 
 //start looping
 enjin.start()
-
+*/
 
 
 
