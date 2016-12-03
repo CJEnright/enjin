@@ -36,7 +36,6 @@
             <li><a href="../libs/collision.js.html">libs/collision.js</a></li>
             <li><a href="../libs/ecs.js.html">libs/ecs.js</a></li>
             <li><a href="../libs/entity.js.html">libs/entity.js</a></li>
-            <li><a href="../libs/physics.js.html">libs/physics.js</a></li>
             <li><a href="../libs/text.js.html">libs/text.js</a></li>
             <li><a href="../libs/timer.js.html">libs/timer.js</a></li>
             <li><a href="../libs/tween.js.html">libs/tween.js</a></li>
@@ -47,7 +46,7 @@
               </li>
               <li><a href="#attach"><i class="alert alert-info"></i><span>attach</span></a>
               </li>
-              <li><a href="#remove"><i class="alert alert-info"></i><span>remove</span></a>
+              <li><a href="#detach"><i class="alert alert-info"></i><span>detach</span></a>
               </li>
               <li><a href="#moveTo"><i class="alert alert-info"></i><span>moveTo</span></a>
               </li>
@@ -125,15 +124,15 @@
 	enjin.ctx.rotate(this.rot);
 	enjin.ctx.translate(-this.x, -this.y);
 }</code></pre>
-          <section id="remove">
-            <h1>remove</h1>
+          <section id="detach">
+            <h1>detach</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>Camera.prototype.remove()</span><span>&nbsp;</span>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>Camera.prototype.detach()</span><span>&nbsp;</span>
             </p>
           </section>
-          <div class="description"><p>Remove Camera&#39;s positioning</p></div>
-          <pre><code class="language-javascript">Camera.prototype.remove = function() {
+          <div class="description"><p>Detach Camera&#39;s positioning</p></div>
+          <pre><code class="language-javascript">Camera.prototype.detach = function() {
 	//save and restore use a stack so it should be good
 	enjin.ctx.restore();
 }</code></pre>

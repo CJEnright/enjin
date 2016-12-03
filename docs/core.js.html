@@ -36,7 +36,6 @@
             <li><a href="libs/collision.js.html">libs/collision.js</a></li>
             <li><a href="libs/ecs.js.html">libs/ecs.js</a></li>
             <li><a href="libs/entity.js.html">libs/entity.js</a></li>
-            <li><a href="libs/physics.js.html">libs/physics.js</a></li>
             <li><a href="libs/text.js.html">libs/text.js</a></li>
             <li><a href="libs/timer.js.html">libs/timer.js</a></li>
             <li><a href="libs/tween.js.html">libs/tween.js</a></li>
@@ -59,7 +58,7 @@
             <h1>init</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>enjin.init()</span><span>&nbsp;</span>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>init()</span><span>&nbsp;</span>
             </p>
           </section>
           <table class="table table-bordered table-striped">
@@ -79,7 +78,7 @@
             </tbody>
           </table>
           <div class="description"><p>Initialize necessary values for enjin</p></div>
-          <pre><code class="language-javascript">enjin.init = function(canvas) {
+          <pre><code class="language-javascript">init: function(canvas) {
 	enjin.version = &quot;0.0.1&quot;;
 	enjin.canvas = canvas;
 	enjin.ctx = enjin.canvas.getContext(&quot;2d&quot;);
@@ -92,7 +91,13 @@
 	enjin.draw = function() {
 		//default game
 	}
-}</code></pre>
+}
+};
+
+enjin.Camera = require('./libs/camera'); //k
+enjin.timer = require('./libs/timer');
+enjin.collision = require('./libs/collision'); //n
+//enjin.network = require('./libs/network');</code></pre>
           <section id="start">
             <h1>start</h1>
             <h5 class="subheader"></h5>
@@ -100,9 +105,12 @@
               <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>enjin.start()</span><span>&nbsp;</span>
             </p>
           </section>
-          <div class="description"><p>Call initial frame</p></div>
+          <div class="description"><p>Request initial frame and begin looping</p></div>
           <pre><code class="language-javascript">enjin.start = function() {
-	if(enjin.update) {
+	if(typeof enjin.load === &quot;function&quot;) {
+		enjin.load();
+	}
+	if(typeof enjin.update === &quot;function&quot;) {
 		enjin.prev = performance.now();
 		enjin.frameID = requestAnimFrame(enjin.loop);
 	}
@@ -117,8 +125,13 @@
           <div class="description"><p>Loop to be called by requestAnimFrame</p></div>
           <pre><code class="language-javascript">enjin.loop = function() { 
 	enjin.now = performance.now();
-	enjin.dt = enjin.now - enjin.prev;
+	enjin.dt = (enjin.now - enjin.prev)/1000;
 	enjin.prev = enjin.now;
+
+	ctx.save();
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	enjin.ctx.clearRect(0, 0, enjin.canvas.width, enjin.canvas.height)
+	ctx.restore();
 
 	enjin.update(enjin.dt);
 	enjin.draw(enjin.dt);
@@ -157,6 +170,7 @@ window.performance.now = performance.now
 	|| performance.msNow
 	|| performance.mozNow
 	|| function() { return Date.now() || +(new Date()); };</code></pre>
+          <div class="description"></div>
         </div>
       </div>
     </div>

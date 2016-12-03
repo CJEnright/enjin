@@ -4,15 +4,15 @@ var Tween =  {
 	_count: 0,
 	methods: {
 		linear: function(s) { return s },
-		quad: function(s) { return s*s },
-		cubic: function(s) { return s*s*s },
-		quart: function(s) { return s*s*s*s },
-		quint: function(s) { return s*s*s*s*s },
-		sine: function(s) { return 1-math.cos(s*math.pi/2) },
+		quad: function(s) { return ss },
+		cubic: function(s) { return sss },
+		quart: function(s) { return ssss },
+		quint: function(s) { return sssss },
+		sine: function(s) { return 1-math.cos(smath.pi/2) },
 		//i think i need math.pow here
-		expo: function(s) { return 2^(10*(s-1)) },
+		expo: function(s) { return 2^(10(s-1)) },
 		//muy expensivo
-		circ: function(s) { return 1 - Math.sqrt(1-s*s) }
+		circ: function(s) { return 1 - Math.sqrt(1-ss) }
 	}
 }
 
@@ -34,7 +34,7 @@ Tween.new = function(params) {
 	enjin.tween._count++;
 }
 
-/*
+/
 Tween.update = function(dt) {
 	for(var i = 0; i < this.tweens.length; i++) {
 		this.tweens[i].time -= dt;
@@ -48,8 +48,8 @@ Tween.update = function(dt) {
 			this.tweens.splice(i, 1);
 		}
 	}
-};*/
-/*
+};/
+/
 module.exports = Tween;
 
 enjin.moduleUpdates.push(function(dt) {
@@ -66,7 +66,7 @@ enjin.moduleUpdates.push(function(dt) {
 		}
 	}
 });
-/*
+/
 local Timer = {}
 Timer.__index = Timer
 
@@ -133,32 +133,32 @@ Timer.tween = setmetatable({
 		return function(s, ...) return 1 - f(1-s, ...) end
 	end,
 	chain = function(f1, f2) -- concatenates two functions
-		return function(s, ...) return (s < .5 and f1(2*s, ...) or 1 + f2(2*s-1, ...)) * .5 end
+		return function(s, ...) return (s < .5 and f1(2s, ...) or 1 + f2(2s-1, ...))  .5 end
 	end,
 
 	-- useful tweening functions
 	linear = function(s) return s end,
-	quad   = function(s) return s*s end,
-	cubic  = function(s) return s*s*s end,
-	quart  = function(s) return s*s*s*s end,
-	quint  = function(s) return s*s*s*s*s end,
-	sine   = function(s) return 1-math.cos(s*math.pi/2) end,
-	expo   = function(s) return 2^(10*(s-1)) end,
-	circ   = function(s) return 1 - math.sqrt(1-s*s) end,
+	quad   = function(s) return ss end,
+	cubic  = function(s) return sss end,
+	quart  = function(s) return ssss end,
+	quint  = function(s) return sssss end,
+	sine   = function(s) return 1-math.cos(smath.pi/2) end,
+	expo   = function(s) return 2^(10(s-1)) end,
+	circ   = function(s) return 1 - math.sqrt(1-ss) end,
 
 	back = function(s,bounciness)
 		bounciness = bounciness or 1.70158
-		return s*s*((bounciness+1)*s - bounciness)
+		return ss((bounciness+1)s - bounciness)
 	end,
 
 	bounce = function(s) -- magic numbers ahead
 		local a,b = 7.5625, 1/2.75
-		return math.min(a*s^2, a*(s-1.5*b)^2 + .75, a*(s-2.25*b)^2 + .9375, a*(s-2.625*b)^2 + .984375)
+		return math.min(as^2, a(s-1.5b)^2 + .75, a(s-2.25b)^2 + .9375, a(s-2.625b)^2 + .984375)
 	end,
 
 	elastic = function(s, amp, period)
 		amp, period = amp and math.max(1, amp) or 1, period or .3
-		return (-amp * math.sin(2*math.pi/period * (s-1) - math.asin(1/amp))) * 2^(10*(s-1))
+		return (-amp  math.sin(2math.pi/period  (s-1) - math.asin(1/amp)))  2^(10(s-1))
 	end,
 }, {
 
@@ -172,7 +172,7 @@ __call = function(tween, self, len, subject, target, method, after, ...)
 			if type(v) == 'table' then
 				tween_collect_payload(ref, v, out)
 			else
-				local ok, delta = pcall(function() return (v-ref)*1 end)
+				local ok, delta = pcall(function() return (v-ref)1 end)
 				assert(ok, 'Field "'..k..'" does not support arithmetic operations')
 				out[#out+1] = {subject, k, delta}
 			end
@@ -191,7 +191,7 @@ __call = function(tween, self, len, subject, target, method, after, ...)
 		last_s = s
 		for _, info in ipairs(payload) do
 			local ref, key, delta = unpack(info)
-			ref[key] = ref[key] + delta * ds
+			ref[key] = ref[key] + delta  ds
 		end
 	end, after)
 end,

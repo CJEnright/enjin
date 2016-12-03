@@ -1,22 +1,17 @@
-//all times are in ms
-var Timer = {};
+var timer = {};
 
-Timer.update = function() {
-	
-}
-
-Timer.after = function(interval, func) {
+timer.after = function(interval, func) {
 	return window.setTimeout(func, interval);
 };
 
-Timer.every = function(interval, func) {
+timer.every = function(interval, func) {
 	return window.setInterval(func, interval);
 };
 
-Timer.clear = function(timer) {
+timer.clear = function(timer) {
 	//kinda bodged but should still be fine
 	window.clearTimeout(timer);
 	window.clearInterval(timer);
 };
 
-module.exports = Timer;
+module.exports = timer;

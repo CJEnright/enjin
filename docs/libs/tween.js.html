@@ -36,27 +36,30 @@
             <li><a href="../libs/collision.js.html">libs/collision.js</a></li>
             <li><a href="../libs/ecs.js.html">libs/ecs.js</a></li>
             <li><a href="../libs/entity.js.html">libs/entity.js</a></li>
-            <li><a href="../libs/physics.js.html">libs/physics.js</a></li>
             <li><a href="../libs/text.js.html">libs/text.js</a></li>
             <li><a href="../libs/timer.js.html">libs/timer.js</a></li>
             <li class="active"><a href="../libs/tween.js.html">libs/tween.js</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#exports"><i class="alert alert-success"></i><span>exports</span></a>
-              </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="exports">
-            <h1>exports</h1>
-            <h5 class="subheader"></h5>
-            <p>
-              <div class="label label-success radius ctx-type">property</div><span>&nbsp;</span><span>module.exports</span><span>&nbsp;</span>
-            </p>
-          </section>
-          <div class="description"><p>Tween.update = function(dt) {<br />    for(var i = 0; i &lt; this.tweens.length; i++) {<br />        this.tweens[i].time -= dt;</p><pre><code>    //updating actual values will be hard
+          <div class="description"><p>//tween is require, something should execute that adds<br />var Tween =  {<br />    tweens: [],<br />    _count: 0,<br />    methods: {<br />        linear: function(s) { return s },<br />        quad: function(s) { return s<em>s },<br />        cubic: function(s) { return s</em>s<em>s },<br />        quart: function(s) { return s</em>s<em>s</em>s },<br />        quint: function(s) { return s<em>s</em>s<em>s</em>s },<br />        sine: function(s) { return 1-math.cos(s<em>math.pi/2) },<br />        //i think i need math.pow here<br />        expo: function(s) { return 2^(10</em>(s-1)) },<br />        //muy expensivo<br />        circ: function(s) { return 1 - Math.sqrt(1-s*s) }<br />    }<br />}</p><p>Tween.new = function(params) {<br />    var tween = {};</p><pre><code>tween.time = params.time || 1;
+//subject is what is actually changed
+tween.subject = params.initial || 0;
+//initial and final are just in betweens for it
+tween.initial = params.initial || 0;
+tween.final = params.final || 1;
+tween.method = enjin.tween.methods[params.method] || enjin.tween.methods.linear;
+tween.finished = params.finished || enjin._nothing;
+
+var id = enjin.tween._count
+enjin.tween.tweens.id = tween;
+
+enjin.tween._count++;
+</code></pre><p>}</p><p>/*<br />Tween.update = function(dt) {<br />    for(var i = 0; i &lt; this.tweens.length; i++) {<br />        this.tweens[i].time -= dt;</p><pre><code>    //updating actual values will be hard
     //this.tweens[i].initial =         
 
     if(this.tweens[i].time &lt;= 0){
@@ -66,23 +69,16 @@
     }
 }
 </code></pre><p>};</p></div>
-          <pre><code class="language-javascript">module.exports = Tween;
+          <div class="description"><p>module.exports = Tween;</p><p>enjin.moduleUpdates.push(function(dt) {<br />    for(var i = 0; i &lt; enjin.tween.tweens.length; i++) {<br />        enjin.tween.tweens[i].time -= dt;</p><pre><code>    //updating actual values will be hard  
+    enjin.tween.tweens[i].initial = 
 
-enjin.moduleUpdates.push(function(dt) {
-	for(var i = 0; i &lt; enjin.tween.tweens.length; i++) {
-		enjin.tween.tweens[i].time -= dt;
-
-		//updating actual values will be hard  
-		enjin.tween.tweens[i].initial = 
-
-		if(enjin.tween.tweens[i].time &lt;= 0){
-			enjin.tween.tweens[i].finished();
-			//remove it from the array
-			enjin.tween.tweens.splice(i, 1);
-		}
-	}
-});</code></pre>
-          <div class="description"><p>local Timer = {}<br />Timer.__index = Timer</p><p>local function <em>nothing</em>() end</p><p>function Timer:update(dt)<br />    local to_remove = {}<br />    for handle, delay in pairs(self.functions) do<br />        delay = delay - dt<br />        if delay &lt;= 0 then<br />            to_remove[#to<em>remove+1] = handle<br />        end<br />        self.functions[handle] = delay<br />        handle.func(dt, delay)<br />    end<br />    for </em>,handle in ipairs(to_remove) do<br />        self.functions[handle] = nil<br />        handle.after(handle.after)<br />    end<br />end</p><p>function Timer:during(delay, func, after)<br />    local handle = {func = func, after = after or <em>nothing</em>}<br />    self.functions[handle] = delay<br />    return handle<br />end</p><p>function Timer:after(delay, func)<br />    return self:during(delay, <em>nothing</em>, func)<br />end</p><p>function Timer:every(delay, func, count)<br />    local count, handle = count or math.huge -- exploit below: math.huge - 1 = math.huge</p><pre><code>handle = self:after(delay, function(f)
+    if(enjin.tween.tweens[i].time &lt;= 0){
+        enjin.tween.tweens[i].finished();
+        //remove it from the array
+        enjin.tween.tweens.splice(i, 1);
+    }
+}
+</code></pre><p>});<br />/*<br />local Timer = {}<br />Timer.__index = Timer</p><p>local function <em>nothing</em>() end</p><p>function Timer:update(dt)<br />    local to_remove = {}<br />    for handle, delay in pairs(self.functions) do<br />        delay = delay - dt<br />        if delay &lt;= 0 then<br />            to_remove[#to<em>remove+1] = handle<br />        end<br />        self.functions[handle] = delay<br />        handle.func(dt, delay)<br />    end<br />    for </em>,handle in ipairs(to_remove) do<br />        self.functions[handle] = nil<br />        handle.after(handle.after)<br />    end<br />end</p><p>function Timer:during(delay, func, after)<br />    local handle = {func = func, after = after or <em>nothing</em>}<br />    self.functions[handle] = delay<br />    return handle<br />end</p><p>function Timer:after(delay, func)<br />    return self:during(delay, <em>nothing</em>, func)<br />end</p><p>function Timer:every(delay, func, count)<br />    local count, handle = count or math.huge -- exploit below: math.huge - 1 = math.huge</p><pre><code>handle = self:after(delay, function(f)
     if func(func) == false then return end
     count = count - 1
     if count &gt; 0 then

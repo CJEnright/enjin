@@ -1,24 +1,27 @@
+//some notes:
+//attatch and detach should have diff names
+//try to find a way to potentially allow pic in pic
+//make it look less like u stole it
+
 /**
  * Create a new Camera instance
  * @param {Object} Params Params to start camera off with
  * @return {Object} A Camera Object with the given Params
  */
 var Camera = function(params) {
-	//Movement interpolators (for camera locking/windowing)
-	this.smooth = {};
-
+	//everything needed for default camera
 	this.x = params.x || 0;
 	this.y = params.y || 0;
 	this.scale = params.scale || 1;
-	this.rotation  = params.rotation || 0;
+	this.rotation = params.rotation || 0;
 }
 
 /**
  * Apply Camera's positioning
  */
 Camera.prototype.attach = function() {
-	var centerX = enjin.canvas.width/(2*this.scale),
-		centerY = enjin.canvas.height/(2*this.scale);
+	var centerX = enjin.width/(2*this.scale),
+		centerY = enjin.height/(2*this.scale);
 
 	enjin.ctx.save();
 	enjin.ctx.scale(this.scale, this.scale);
@@ -28,9 +31,9 @@ Camera.prototype.attach = function() {
 }
 
 /**
- * Remove Camera's positioning
+ * Detach Camera's positioning
  */
-Camera.prototype.remove = function() {
+Camera.prototype.detach = function() {
 	//save and restore use a stack so it should be good
 	enjin.ctx.restore();
 }

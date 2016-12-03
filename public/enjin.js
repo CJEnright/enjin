@@ -1,72 +1,86 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 //you can make a game with these functions alone
-//however the others will help a lot
-window.enjin = {};
+//however the others will help
+//random dev thing to add: http://stackoverflow.com/questions/15313418/javascript-assert, for debugging
+//if you do add ^ make sure it's not in minified releases.
 
-enjin.Camera = require('./libs/camera'); //k
-enjin.timer = require('./libs/timer');
-enjin.State = require('./libs/state');
-enjin.collision = require('./libs/collision'); //n
-//enjin.network = require('./libs/network');
-
-/**
- * Initialize necessary values for enjin
- * @param {Object} Canvas Canvas for game to be played on
- */
-enjin.init = function(canvas) {
-	enjin.version = "0.0.1";
-	enjin.canvas = canvas;
-	enjin.ctx = enjin.canvas.getContext("2d");
-	enjin.delay = 1000/60;
-
-	enjin.update = function(dt) {
-		//default game
-	}
-
-	enjin.draw = function() {
-		//default game
-	}
-}
-
-/**
- * Call initial frame
- */
-enjin.start = function() {
-	if(typeof enjin.load === "function") {
-		enjin.load();
-	}
-	if(typeof enjin.update === "function") {
-		enjin.prev = performance.now();
-		enjin.frameID = requestAnimFrame(enjin.loop);
-	}
-}
-
-/**
- * Loop to be called by requestAnimFrame
- */
-enjin.loop = function() { 
-	enjin.now = performance.now();
-	enjin.dt = (enjin.now - enjin.prev)/1000;
-	enjin.prev = enjin.now;
-
-	ctx.save();
-	ctx.setTransform(1, 0, 0, 1, 0, 0);
-	enjin.ctx.clearRect(0, 0, enjin.canvas.width, enjin.canvas.height)
-	ctx.restore();
-
-	enjin.update(enjin.dt);
-	enjin.draw(enjin.dt);
+window.enjin = {
+	version: "0.0.1",
+	delay: 1000/60,
 	
-	//this thing is pretty smart, it should use the monitors refresh rate as the fps
-	enjin.frameID = requestAnimFrame(enjin.loop)
-}
+	/**
+	 * Attach the enjin instance to a canvas
+	 * @param {Object} Canvas Canvas for game to be played on
+	 */
+	attatch: function(canvas) {
+		enjin.canvas = canvas;
+		enjin.width = canvas.width || 0;
+		enjin.height = canvas.height || 0;
+		enjin.ctx = enjin.canvas.getContext("2d");
 
-/**
- * Stop calling requestAnimFrame
- */
-enjin.stop = function() {
-	cancelAnimFrame(enjin.frameID);
-}
+		enjin.update = function(dt) {
+			//default game updating function
+		}
+
+		enjin.render = function(dt) {
+			//default game rendering function
+		}
+	},
+
+	/**
+	 * Request initial frame and begin looping
+	 */
+	start: function() {
+		if(typeof enjin.load === "function") {
+			enjin.load();
+		}
+		if(typeof enjin.update === "function") {
+			enjin.prev = performance.now();
+			enjin.frameID = requestAnimFrame(enjin.loop);
+		}
+	},
+
+	//A potentially better way to loop is here http://gameprogrammingpatterns.com/game-loop.html#play-catch-up
+	//but it is a little bulkier and this way should be fine.
+	/**
+	 * Loop to be called by requestAnimFrame
+	 */
+	loop: function() { 
+		enjin.now = performance.now();
+		enjin.dt = (enjin.now - enjin.previous)/1000 || 0;
+		enjin.previous = enjin.now;
+
+		ctx.save(); //save the current canvas drawing "settings"
+		ctx.setTransform(1, 0, 0, 1, 0, 0); //reset all canvas transforms so it clears correctly
+		enjin.ctx.clearRect(0, 0, enjin.width, enjin.height);
+		ctx.restore(); //restore the previous canvas drawing "settings"
+
+		enjin.update(enjin.dt);
+		enjin.render(enjin.dt);
+		
+		//this thing is pretty smart, it should use the monitors refresh rate as the fps
+		enjin.frameID = requestAnimFrame(enjin.loop)
+	},
+
+	/**
+	 * Stop calling requestAnimFrame which stops the game loop
+	 */
+	stop: function() {
+		cancelAnimFrame(enjin.frameID);
+	}
+};
+
+
+enjin.Camera = require('./libs/camera'); //kool
+enjin.timer = require('./libs/timer'); //kool
+
+
+
+
+
+/* ----------[ POLLYFILLS ]---------- */
+//with fallbacks!
+//sorted by popularity, maybe sort by performance of browser (worst comes first)
 
 window.requestAnimFrame = window.requestAnimationFrame
     || window.webkitRequestAnimationFrame
@@ -87,28 +101,42 @@ window.performance.now = performance.now
 	|| performance.msNow
 	|| performance.mozNow
 	|| function() { return Date.now() || +(new Date()); };
-},{"./libs/camera":2,"./libs/collision":3,"./libs/state":4,"./libs/timer":5}],2:[function(require,module,exports){
+
+
+
+
+
+
+
+/*
+
+
+*/
+},{"./libs/camera":2,"./libs/timer":3}],2:[function(require,module,exports){
+//some notes:
+//attatch and detach should have diff names
+//try to find a way to potentially allow pic in pic
+//make it look less like u stole it
+
 /**
  * Create a new Camera instance
  * @param {Object} Params Params to start camera off with
  * @return {Object} A Camera Object with the given Params
  */
 var Camera = function(params) {
-	//Movement interpolators (for camera locking/windowing)
-	this.smooth = {};
-
+	//everything needed for default camera
 	this.x = params.x || 0;
 	this.y = params.y || 0;
 	this.scale = params.scale || 1;
-	this.rotation  = params.rotation || 0;
+	this.rotation = params.rotation || 0;
 }
 
 /**
  * Apply Camera's positioning
  */
 Camera.prototype.attach = function() {
-	var centerX = enjin.canvas.width/(2*this.scale),
-		centerY = enjin.canvas.height/(2*this.scale);
+	var centerX = enjin.width/(2*this.scale),
+		centerY = enjin.height/(2*this.scale);
 
 	enjin.ctx.save();
 	enjin.ctx.scale(this.scale, this.scale);
@@ -118,9 +146,9 @@ Camera.prototype.attach = function() {
 }
 
 /**
- * Remove Camera's positioning
+ * Detach Camera's positioning
  */
-Camera.prototype.remove = function() {
+Camera.prototype.detach = function() {
 	//save and restore use a stack so it should be good
 	enjin.ctx.restore();
 }
@@ -222,84 +250,21 @@ Camera.prototype.toCameraCoords = function(x, y) {
 
 module.exports = Camera;
 },{}],3:[function(require,module,exports){
-//this checks for collisions and maybe returns data
-//idk what SAT is but i think its needed...
-var collision = {}
+var timer = {};
 
-/**
- * Axis aligned bounding box collision check
- * @param {Number} X X coordinate of top left corner of first object
- * @param {Number} Y Y coordinate of top left corner of first object
- * @param {Number} Width Width of first object
- * @param {Number} Height Height of first object
- * @param {Number} X X coordinate of top left corner of second object
- * @param {Number} Y Y coordinate of top left corner of second object
- * @param {Number} Width Width of second object
- * @param {Number} Height Height of second object
- * @return {Boolean} Whether or not two rectangles have collided
- */
-collision.AABB = function(x1, y1, w1, h1, x2, y2, w2, h2) {
-	return (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && h1 + y1 > y2);
-}
-
-/**
- * Axis aligned bounding box collision check using objects
- * @param {Object} Object1 First object with attributes x, y, width (or w), and height (or h)
- * @param {Object} Object2 Second object with attributes x, y, width (or w), and height (or h)
- * @return {Boolean} Whether or not two objects have collided
- */
-collision.AABBObject = function(obj1, obj2) {
-	return (obj1.x < obj2.x + (obj2.width || obj2.w) && obj1.x + (obj1.width || obj1.w) > obj2.x && obj1.y < obj2.y + (obj2.height || obj2.h) && (obj1.height || obj1.h) + obj1.y > obj2.y);
-}
-
-/**
- * Bounding circle collision check
- * @param {Number} X X coordinate of center of first object
- * @param {Number} Y Y coordinate of center of first object
- * @param {Number} Radius Radius of first object
- * @param {Number} X X coordinate of center of second object
- * @param {Number} Y Y coordinate of center of second object
- * @param {Number} Radius Radius of second object
- * @return {Boolean} Whether or not two circles have collided
- */
-collision.circle = function(x1, y1, r1, x2, y2, r2) {
-	return (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2;
-}
-
-/**
- * Bounding circle collision check using objects
- * @param {Object} Object1 First object with attributes x, y, and radius (or r)
- * @param {Object} Object2 First object with attributes x, y, and radius (or r)
- * @return {Boolean} Whether or not two objects have collided
- */
-collision.circle = function(obj1, obj2) {
-	return (obj2.x-obj1.x)^2 + (obj1.y-obj2.y)^2 <= ((obj1.radius || obj1.r)+(obj2.radius || obj2.r))^2;
-}
-
-module.exports = collision;
-},{}],4:[function(require,module,exports){
-
-},{}],5:[function(require,module,exports){
-//all times are in ms
-var Timer = {};
-
-Timer.update = function() {
-	
-}
-
-Timer.after = function(interval, func) {
+timer.after = function(interval, func) {
 	return window.setTimeout(func, interval);
 };
 
-Timer.every = function(interval, func) {
+timer.every = function(interval, func) {
 	return window.setInterval(func, interval);
 };
 
-Timer.clear = function(timer) {
+timer.clear = function(timer) {
 	//kinda bodged but should still be fine
 	window.clearTimeout(timer);
 	window.clearInterval(timer);
 };
 
-module.exports = Timer;
+module.exports = timer;
 },{}]},{},[1]);
