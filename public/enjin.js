@@ -3,9 +3,11 @@
 //however the others will help
 //random dev thing to add: http://stackoverflow.com/questions/15313418/javascript-assert, for debugging
 //if you do add ^ make sure it's not in minified releases.
+//the enjin namespace needs to be kept open
 
 window.enjin = {
 	version: "0.0.1",
+	//60 fps
 	delay: 1000/60,
 	
 	/**
@@ -18,13 +20,9 @@ window.enjin = {
 		enjin.height = canvas.height || 0;
 		enjin.ctx = enjin.canvas.getContext("2d");
 
-		enjin.update = function(dt) {
-			//default game updating function
-		}
+		enjin.update = function(dt) {}
 
-		enjin.render = function(dt) {
-			//default game rendering function
-		}
+		enjin.render = function(dt) {}
 	},
 
 	/**
@@ -72,7 +70,8 @@ window.enjin = {
 
 
 enjin.Camera = require('./libs/camera'); //kool
-enjin.timer = require('./libs/timer'); //kool
+enjin.timer = require('./libs/timer'); //not kool
+enjin.collision = require('./libs/collision'); //kool
 
 
 
@@ -112,7 +111,7 @@ window.performance.now = performance.now
 
 
 */
-},{"./libs/camera":2,"./libs/timer":3}],2:[function(require,module,exports){
+},{"./libs/camera":2,"./libs/collision":3,"./libs/timer":4}],2:[function(require,module,exports){
 //some notes:
 //attatch and detach should have diff names
 //try to find a way to potentially allow pic in pic
@@ -250,7 +249,66 @@ Camera.prototype.toCameraCoords = function(x, y) {
 
 module.exports = Camera;
 },{}],3:[function(require,module,exports){
+//this checks for collisions and maybe returns data
+//idk what SAT is but i think its needed...
+var collision = {}
+
+/**
+ * Axis aligned bounding box collision check
+ * @param {Number} X X coordinate of top left corner of first object
+ * @param {Number} Y Y coordinate of top left corner of first object
+ * @param {Number} Width Width of first object
+ * @param {Number} Height Height of first object
+ * @param {Number} X X coordinate of top left corner of second object
+ * @param {Number} Y Y coordinate of top left corner of second object
+ * @param {Number} Width Width of second object
+ * @param {Number} Height Height of second object
+ * @return {Boolean} Whether or not two rectangles have collided
+ */
+collision.AABB = function(x1, y1, w1, h1, x2, y2, w2, h2) {
+	return (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && h1 + y1 > y2);
+}
+
+/**
+ * Axis aligned bounding box collision check using objects
+ * @param {Object} Object1 First object with attributes x, y, width (or w), and height (or h)
+ * @param {Object} Object2 Second object with attributes x, y, width (or w), and height (or h)
+ * @return {Boolean} Whether or not two objects have collided
+ */
+collision.AABBObject = function(obj1, obj2) {
+	return (obj1.x < obj2.x + (obj2.width || obj2.w) && obj1.x + (obj1.width || obj1.w) > obj2.x && obj1.y < obj2.y + (obj2.height || obj2.h) && (obj1.height || obj1.h) + obj1.y > obj2.y);
+}
+
+/**
+ * Bounding circle collision check
+ * @param {Number} X X coordinate of center of first object
+ * @param {Number} Y Y coordinate of center of first object
+ * @param {Number} Radius Radius of first object
+ * @param {Number} X X coordinate of center of second object
+ * @param {Number} Y Y coordinate of center of second object
+ * @param {Number} Radius Radius of second object
+ * @return {Boolean} Whether or not two circles have collided
+ */
+collision.circle = function(x1, y1, r1, x2, y2, r2) {
+	return (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2;
+}
+
+/**
+ * Bounding circle collision check using objects
+ * @param {Object} Object1 First object with attributes x, y, and radius (or r)
+ * @param {Object} Object2 First object with attributes x, y, and radius (or r)
+ * @return {Boolean} Whether or not two objects have collided
+ */
+collision.circle = function(obj1, obj2) {
+	return (obj2.x-obj1.x)^2 + (obj1.y-obj2.y)^2 <= ((obj1.radius || obj1.r)+(obj2.radius || obj2.r))^2;
+}
+
+module.exports = collision;
+},{}],4:[function(require,module,exports){
 var timer = {};
+
+//basically different verbage
+//oh spit actually should be based off the ticks of games
 
 timer.after = function(interval, func) {
 	return window.setTimeout(func, interval);
@@ -261,7 +319,6 @@ timer.every = function(interval, func) {
 };
 
 timer.clear = function(timer) {
-	//kinda bodged but should still be fine
 	window.clearTimeout(timer);
 	window.clearInterval(timer);
 };

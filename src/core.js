@@ -2,9 +2,11 @@
 //however the others will help
 //random dev thing to add: http://stackoverflow.com/questions/15313418/javascript-assert, for debugging
 //if you do add ^ make sure it's not in minified releases.
+//the enjin namespace needs to be kept open
 
 window.enjin = {
 	version: "0.0.1",
+	//60 fps
 	delay: 1000/60,
 	
 	/**
@@ -17,13 +19,9 @@ window.enjin = {
 		enjin.height = canvas.height || 0;
 		enjin.ctx = enjin.canvas.getContext("2d");
 
-		enjin.update = function(dt) {
-			//default game updating function
-		}
+		enjin.update = function(dt) {}
 
-		enjin.render = function(dt) {
-			//default game rendering function
-		}
+		enjin.render = function(dt) {}
 	},
 
 	/**
@@ -71,8 +69,8 @@ window.enjin = {
 
 
 enjin.Camera = require('./libs/camera'); //kool
-enjin.timer = require('./libs/timer'); //kool
-require('./libs/src');
+enjin.timer = require('./libs/timer'); //not kool
+enjin.collision = require('./libs/collision'); //kool
 
 
 
