@@ -8,8 +8,6 @@ var Entity = function(components, systems, label) {
 	this.systems = systems;
 	//idk if enjin should have all entites
 	this.label = label || enjin.entites.length + 1 || Math.random() * 1000;
-	//idk about this
-	enjin.entites.push(this);
 }
 
 //component is a key-value object like {health: 100, color:'yellow'}

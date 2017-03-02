@@ -1,8 +1,3 @@
-//some notes:
-//attatch and detach should have diff names
-//try to find a way to potentially allow pic in pic
-//make it look less like u stole it
-
 /**
  * Create a new Camera instance
  * @param {Object} Params Params to start camera off with
@@ -19,23 +14,23 @@ var Camera = function(params) {
 /**
  * Apply Camera's positioning
  */
-Camera.prototype.attach = function() {
+Camera.prototype.attach = function(ctx) {
 	var centerX = enjin.width/(2*this.scale),
-		centerY = enjin.height/(2*this.scale);
+	var centerY = enjin.height/(2*this.scale);
 
-	enjin.ctx.save();
-	enjin.ctx.scale(this.scale, this.scale);
-	enjin.ctx.translate(centerX, centerY);
-	enjin.ctx.rotate(this.rot);
-	enjin.ctx.translate(-this.x, -this.y);
+	ctx.save();
+	ctx.scale(this.scale, this.scale);
+	ctx.translate(centerX, centerY);
+	ctx.rotate(this.rot);
+	ctx.translate(-this.x, -this.y);
 }
 
 /**
  * Detach Camera's positioning
  */
-Camera.prototype.detach = function() {
+Camera.prototype.detach = function(ctx) {
 	//save and restore use a stack so it should be good
-	enjin.ctx.restore();
+	ctx.restore();
 }
 
 /**
@@ -78,7 +73,7 @@ Camera.prototype.rotateTo = function(rad) {
  * Scale Camera a certain amount
  * @param {Number} Scalar Number to multiply the Camera's scale by
  */
-Camera.prototype.scale = function(scalar) {
+Camera.prototype.scaleBy = function(scalar) {
 	this.scale = this.scale * scalar;
 }
 
@@ -89,6 +84,15 @@ Camera.prototype.scale = function(scalar) {
 Camera.prototype.scaleTo = function(scale) {
 	this.scale = scale;
 }
+
+Camera.prototype.scaleToPoint = function(scalar, pointx, pointy) {
+	var goodx = (app.canvas.width/2 - e.offsetX)
+	var goody = app.canvas.height/2 - e.offsetY
+	var movex = (goodx/(app.camera.scale * scalar) - goodx/app.camera.scale);
+	var movey = (goody/(app.camera.scale * scalar) - goody/app.camera.scale);
+	app.camera.move(movex, movey)
+	this.scaleBy(scalar)
+};
 
 /**
  * Convert Camera coordinates to Map coordinates
