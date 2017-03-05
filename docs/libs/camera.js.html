@@ -34,11 +34,9 @@
             <li><a href="../core.js.html">core.js</a></li>
             <li class="active"><a href="../libs/camera.js.html">libs/camera.js</a></li>
             <li><a href="../libs/collision.js.html">libs/collision.js</a></li>
-            <li><a href="../libs/ecs.js.html">libs/ecs.js</a></li>
-            <li><a href="../libs/entity.js.html">libs/entity.js</a></li>
+            <li><a href="../libs/state.js.html">libs/state.js</a></li>
             <li><a href="../libs/text.js.html">libs/text.js</a></li>
             <li><a href="../libs/timer.js.html">libs/timer.js</a></li>
-            <li><a href="../libs/tween.js.html">libs/tween.js</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
@@ -56,9 +54,11 @@
               </li>
               <li><a href="#rotateTo"><i class="alert alert-info"></i><span>rotateTo</span></a>
               </li>
-              <li><a href="#scale"><i class="alert alert-info"></i><span>scale</span></a>
+              <li><a href="#scaleBy"><i class="alert alert-info"></i><span>scaleBy</span></a>
               </li>
               <li><a href="#scaleTo"><i class="alert alert-info"></i><span>scaleTo</span></a>
+              </li>
+              <li><a href="#scaleToPoint"><i class="alert alert-info"></i><span>scaleToPoint</span></a>
               </li>
               <li><a href="#toMapCoords"><i class="alert alert-info"></i><span>toMapCoords</span></a>
               </li>
@@ -98,13 +98,11 @@
           </table>
           <div class="description"><p>Create a new Camera instance</p></div>
           <pre><code class="language-javascript">var Camera = function(params) {
-	//Movement interpolators (for camera locking/windowing)
-	this.smooth = {};
-
+	//everything needed for default camera
 	this.x = params.x || 0;
 	this.y = params.y || 0;
 	this.scale = params.scale || 1;
-	this.rotation  = params.rotation || 0;
+	this.rotation = params.rotation || 0;
 }</code></pre>
           <section id="attach">
             <h1>attach</h1>
@@ -115,8 +113,8 @@
           </section>
           <div class="description"><p>Apply Camera&#39;s positioning</p></div>
           <pre><code class="language-javascript">Camera.prototype.attach = function() {
-	var centerX = enjin.canvas.width/(2*this.scale),
-		centerY = enjin.canvas.height/(2*this.scale);
+	var centerX = enjin.width/(2*this.scale);
+	var centerY = enjin.height/(2*this.scale);
 
 	enjin.ctx.save();
 	enjin.ctx.scale(this.scale, this.scale);
@@ -256,11 +254,11 @@
           <pre><code class="language-javascript">Camera.prototype.rotateTo = function(rad) {
 	this.rotation = rad;
 }</code></pre>
-          <section id="scale">
-            <h1>scale</h1>
+          <section id="scaleBy">
+            <h1>scaleBy</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>Camera.prototype.scale()</span><span>&nbsp;</span>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>Camera.prototype.scaleBy()</span><span>&nbsp;</span>
             </p>
           </section>
           <table class="table table-bordered table-striped">
@@ -279,8 +277,8 @@
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>Scale Camera a certain amount</p></div>
-          <pre><code class="language-javascript">Camera.prototype.scale = function(scalar) {
+          <div class="description"><p>Scale Camera by a certain amount</p></div>
+          <pre><code class="language-javascript">Camera.prototype.scaleBy = function(scalar) {
 	this.scale = this.scale * scalar;
 }</code></pre>
           <section id="scaleTo">
@@ -310,6 +308,48 @@
           <pre><code class="language-javascript">Camera.prototype.scaleTo = function(scale) {
 	this.scale = scale;
 }</code></pre>
+          <section id="scaleToPoint">
+            <h1>scaleToPoint</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>Camera.prototype.scaleToPoint()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Scalar</td>
+                <td>Number</td>
+                <td><p>Number to multiply the Camera&#39;s scale by</p></td>
+              </tr>
+              <tr>
+                <td>PointX</td>
+                <td>Number</td>
+                <td><p>X coordinate to scale to</p></td>
+              </tr>
+              <tr>
+                <td>PointY</td>
+                <td>Number</td>
+                <td><p>Y coordinate to scale to</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Scale Camera by a certain amount to a specific point</p></div>
+          <pre><code class="language-javascript">Camera.prototype.scaleToPoint = function(scalar, pointx, pointy) {
+	var goodx = enjin.canvas.width/2 - pointx
+	var goody = enjin.canvas.height/2 - pointy
+	var movex = (goodx/(this.scale * scalar) - goodx/this.scale);
+	var movey = (goody/(this.scale * scalar) - goody/this.scale);
+	this.move(movex, movey)
+	this.scaleBy(scalar)
+};</code></pre>
           <section id="toMapCoords">
             <h1>toMapCoords</h1>
             <h5 class="subheader"></h5>

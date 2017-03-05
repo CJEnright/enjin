@@ -2,10 +2,10 @@
 To add:
 height 
 */
-var Text = {};
+var text = {};
 
-Text.getWidth = function(string) {
+text.getWidth = function(string) {
 	return ctx.measureText(string).width;
 }
 
-module.exports = Text;
+module.exports = text;

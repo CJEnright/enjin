@@ -1,5 +1,5 @@
-//this checks for collisions and maybe returns data
-//idk what SAT is but i think its needed...
+// Naive collisions
+// If you're a nerd, maybe figure out hashmapping for EFFICIENT CODE
 var collision = {}
 
 /**

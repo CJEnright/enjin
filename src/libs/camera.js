@@ -14,23 +14,23 @@ var Camera = function(params) {
 /**
  * Apply Camera's positioning
  */
-Camera.prototype.attach = function(ctx) {
-	var centerX = enjin.width/(2*this.scale),
+Camera.prototype.attach = function() {
+	var centerX = enjin.width/(2*this.scale);
 	var centerY = enjin.height/(2*this.scale);
 
-	ctx.save();
-	ctx.scale(this.scale, this.scale);
-	ctx.translate(centerX, centerY);
-	ctx.rotate(this.rot);
-	ctx.translate(-this.x, -this.y);
+	enjin.ctx.save();
+	enjin.ctx.scale(this.scale, this.scale);
+	enjin.ctx.translate(centerX, centerY);
+	enjin.ctx.rotate(this.rot);
+	enjin.ctx.translate(-this.x, -this.y);
 }
 
 /**
  * Detach Camera's positioning
  */
-Camera.prototype.detach = function(ctx) {
+Camera.prototype.detach = function() {
 	//save and restore use a stack so it should be good
-	ctx.restore();
+	enjin.ctx.restore();
 }
 
 /**
@@ -70,7 +70,7 @@ Camera.prototype.rotateTo = function(rad) {
 }
 
 /**
- * Scale Camera a certain amount
+ * Scale Camera by a certain amount
  * @param {Number} Scalar Number to multiply the Camera's scale by
  */
 Camera.prototype.scaleBy = function(scalar) {
@@ -85,12 +85,18 @@ Camera.prototype.scaleTo = function(scale) {
 	this.scale = scale;
 }
 
+/**
+ * Scale Camera by a certain amount to a specific point
+ * @param {Number} Scalar Number to multiply the Camera's scale by
+ * @param {Number} PointX X coordinate to scale to
+ * @param {Number} PointY Y coordinate to scale to
+ */
 Camera.prototype.scaleToPoint = function(scalar, pointx, pointy) {
-	var goodx = (app.canvas.width/2 - e.offsetX)
-	var goody = app.canvas.height/2 - e.offsetY
-	var movex = (goodx/(app.camera.scale * scalar) - goodx/app.camera.scale);
-	var movey = (goody/(app.camera.scale * scalar) - goody/app.camera.scale);
-	app.camera.move(movex, movey)
+	var goodx = enjin.canvas.width/2 - pointx
+	var goody = enjin.canvas.height/2 - pointy
+	var movex = (goodx/(this.scale * scalar) - goodx/this.scale);
+	var movey = (goody/(this.scale * scalar) - goody/this.scale);
+	this.move(movex, movey)
 	this.scaleBy(scalar)
 };
 

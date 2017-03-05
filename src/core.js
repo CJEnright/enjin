@@ -1,69 +1,79 @@
-//you can make a game with these functions alone
-//however the others will help
-//random dev thing to add: http://stackoverflow.com/questions/15313418/javascript-assert, for debugging
-//if you do add ^ make sure it's not in minified releases.
-//the enjin namespace needs to be kept open
-
 window.enjin = {
-	version: "0.0.1",
+	version: "0.2508",
 	//60 fps
-	delay: 1000/60,
+	defaultDelay: 1000/60,
 	
 	/**
 	 * Attach the enjin instance to a canvas
 	 * @param {Object} Canvas Canvas for game to be played on
 	 */
-	attatch: function(canvas) {
-		enjin.canvas = canvas;
-		enjin.width = canvas.width || 0;
-		enjin.height = canvas.height || 0;
-		enjin.ctx = enjin.canvas.getContext("2d");
+	attach: function(canvas) {
+		this.canvas = canvas;
+		this.width = canvas.width || 0;
+		this.height = canvas.height || 0;
+		this.ctx = this.canvas.getContext("2d");
 
-		enjin.update = function(dt) {}
-
-		enjin.render = function(dt) {}
+		// Create the default state (basically trying to prevent errors incase user is stupid)
+		this.currentState = {
+			update: function(dt) {},
+			render: function(dt) {}
+		};
 	},
 
 	/**
 	 * Request initial frame and begin looping
 	 */
 	start: function() {
-		if(typeof enjin.load === "function") {
-			enjin.load();
-		}
-		if(typeof enjin.update === "function") {
-			enjin.prev = performance.now();
-			enjin.frameID = requestAnimFrame(enjin.loop);
+		enjin.previous = performance.now();
+		enjin.frameID = requestAnimFrame(enjin.loop);
+
+		// Let the currentState know we're starting (resuming)
+		if(enjin.currentState.resume) {
+			enjin.currentState.resume();
 		}
 	},
 
 	//A potentially better way to loop is here http://gameprogrammingpatterns.com/game-loop.html#play-catch-up
-	//but it is a little bulkier and this way should be fine.
 	/**
-	 * Loop to be called by requestAnimFrame
+	 * Loop called by requestAnimFrame, finds dt then calls updates and renders
 	 */
 	loop: function() { 
+		// Can't use "this" here because it's being called in the window's context
 		enjin.now = performance.now();
 		enjin.dt = (enjin.now - enjin.previous)/1000 || 0;
 		enjin.previous = enjin.now;
 
-		ctx.save(); //save the current canvas drawing "settings"
-		ctx.setTransform(1, 0, 0, 1, 0, 0); //reset all canvas transforms so it clears correctly
-		enjin.ctx.clearRect(0, 0, enjin.width, enjin.height);
-		ctx.restore(); //restore the previous canvas drawing "settings"
+		enjin.timer.updateAll(enjin.dt);
 
-		enjin.update(enjin.dt);
-		enjin.render(enjin.dt);
+		enjin.ctx.save(); //save the current canvas drawing "settings"
+		enjin.ctx.setTransform(1, 0, 0, 1, 0, 0); //reset all canvas transforms so it clears correctly
+		enjin.ctx.clearRect(0, 0, enjin.width, enjin.height);
+		enjin.ctx.restore(); //restore the previous canvas drawing "settings"
+
+		enjin.currentState.update(enjin.dt);
+		enjin.currentState.render(enjin.dt);
 		
 		//this thing is pretty smart, it should use the monitors refresh rate as the fps
-		enjin.frameID = requestAnimFrame(enjin.loop)
+		enjin.frameID = requestAnimFrame(enjin.loop);
 	},
 
 	/**
-	 * Stop calling requestAnimFrame which stops the game loop
+	 * Stop calling requestAnimFrame, stopping the game loop
 	 */
 	stop: function() {
-		cancelAnimFrame(enjin.frameID);
+		cancelAnimFrame(this.frameID);
+
+		// Let the currentState know we're stopping (pausing)
+		if(enjin.currentState.pause) {
+			enjin.currentState.pause();
+		}
+	},
+
+	/**
+	 * Helper for watching window resizing
+	 */
+	watchForResize: function(func) {
+		window.onresize = func;
 	}
 };
 
@@ -71,21 +81,20 @@ window.enjin = {
 enjin.Camera = require('./libs/camera'); //kool
 enjin.timer = require('./libs/timer'); //not kool
 enjin.collision = require('./libs/collision'); //kool
+enjin.state = require('./libs/state');
 
 
 
 
 
 /* ----------[ POLLYFILLS ]---------- */
-//with fallbacks!
-//sorted by popularity, maybe sort by performance of browser (worst comes first)
 
 window.requestAnimFrame = window.requestAnimationFrame
     || window.webkitRequestAnimationFrame
     || window.msRequestAnimationFrame
     || window.mozRequestAnimationFrame 
     || window.oRequestAnimationFrame  
-    || function(callback) { return window.setTimeout(callback, enjin.delay); }; 
+    || function(callback) { return window.setTimeout(callback, enjin.defaultDelay); }; 
 
 window.cancelAnimFrame = window.cancelAnimationFrame
     || window.webkitCancelAnimationFrame 

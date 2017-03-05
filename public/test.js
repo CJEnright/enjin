@@ -1,10 +1,15 @@
-var canvas = document.getElementById("gameCanvas"),
-	ctx = canvas.getContext("2d");
+var canvas = document.getElementById("gameCanvas");
+var ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-enjin.attatch(canvas);
+enjin.watchForResize(function(e) {
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+})
+
+enjin.attach(canvas);
 
 var player2 = {
 	x: 10, 
@@ -29,29 +34,42 @@ var camera = new enjin.Camera({
 	y:player.y
 });
 
+var gameState = {
+	update: function(dt) {
+		//player.x += Math.random() * player.speedx * dt;
+		//player.y += Math.random() * player.speedy * dt;
 
-enjin.update = function(dt) {
-	player.x += Math.random() * player.speedx * dt;
-	player.y += Math.random() * player.speedy * dt;
+		player2.x += Math.random() * player.speedx * dt;
+		player2.y += Math.random() * player.speedy * dt;
 
-	player2.x += Math.random() * player.speedx * dt;
-	player2.y += Math.random() * player.speedy * dt;
+		//camera.moveTo(player2.x, player2.y);
+	},
 
-	camera.moveTo(player2.x, player2.y);
+	render: function() {
+		camera.attach();
+
+		ctx.drawImage(background, 0, 0); 
+		ctx.fillRect(player.x, player.y, 10, 10);
+		ctx.fillRect(player2.x, player2.y, 10, 10);
+
+		camera.detach();
+	}
 }
 
-enjin.render = function() {
-	camera.attach();
+enjin.state.switch(gameState);
 
-	ctx.drawImage(background, 0, 0); 
-	ctx.fillRect(player.x, player.y, 10, 10);
-	ctx.fillRect(player2.x, player2.y, 10, 10);
+//timer testing
 
-	camera.detach();
-}
+enjin.timer.during(1.5, function(dt) {
+	console.log(dt);
+}, function() {
+	console.log("dogs are done");
+})
+
+enjin.timer.tween(2, player, {x: 120, y: 320}, "in-out-quad", function() {console.log("tweened af")})
 
 //start looping
-enjin.start()
+enjin.start();
 
 
 /*var canvas = document.getElementById("gameCanvas"),
