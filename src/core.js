@@ -78,10 +78,12 @@ window.enjin = {
 };
 
 
+enjin.util = require('./libs/util');
 enjin.Camera = require('./libs/camera'); //kool
 enjin.timer = require('./libs/timer'); //not kool
 enjin.collision = require('./libs/collision'); //kool
 enjin.state = require('./libs/state');
+enjin.particle = require('./libs/particle');
 
 
 

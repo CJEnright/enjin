@@ -61,12 +61,20 @@ enjin.state.switch(gameState);
 //timer testing
 
 enjin.timer.during(1.5, function(dt) {
-	console.log(dt);
+	//console.log(dt);
 }, function() {
 	console.log("dogs are done");
 })
 
-enjin.timer.tween(2, player, {x: 120, y: 320}, "in-out-quad", function() {console.log("tweened af")})
+enjin.timer.tween(2, player, {x: 120, y: 320}, "in-out-quad", function() {
+	enjin.timer.tween(2, player, {x: 0, y: 0}, "in-out-quad", function() {
+		enjin.timer.tween(2, player, {x: 120, y: 320}, "in-out-quad")
+	})
+});
+
+enjin.particle.Emitter(50, 50, {
+	accel: 2
+}, 25);
 
 //start looping
 enjin.start();
