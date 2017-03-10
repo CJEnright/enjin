@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" charset="utf-8">
+    <title>mr-doc</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/cayman.min.css">
+    <link rel="stylesheet" href="../css/prism.min.css">
+    <link rel="stylesheet" href="../css/index.min.css">
+    <link rel="stylesheet" href="../css/docs.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-responsive.min.css">
+  </head>
+  <body data-spy="scroll" data-target=".scrollspy">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container"><a class="brand">Mr. Doc</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right sponsored"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header id="overview" class="jumbotron subhead">
+      <div class="container">
+        <h1>mr-doc</h1>
+        <p class="lead"></p>
+      </div>
+    </header>
+    <div class="container">
+      <div class="row">
+        <div class="span3 bs-docs-sidebar">
+          <ul class="nav nav-list bs-docs-sidenav affix-top">
+            <li><a href="../index.html">Main</a></li>
+            <li><a href="../core.js.html">core.js</a></li>
+            <li><a href="../libs/camera.js.html">libs/camera.js</a></li>
+            <li><a href="../libs/collision.js.html">libs/collision.js</a></li>
+            <li class="active"><a href="../libs/state.js.html">libs/state.js</a></li>
+            <li><a href="../libs/text.js.html">libs/text.js</a></li>
+            <li><a href="../libs/timer.js.html">libs/timer.js</a></li>
+          </ul>
+          <div class="scrollspy">
+            <ul class="nav nav-list bs-docs-sidenav affix-top">
+              <li><a href="#switch"><i class="alert alert-info"></i><span>switch</span></a>
+              </li>
+              <li><a href="#push"><i class="alert alert-info"></i><span>push</span></a>
+              </li>
+              <li><a href="#pop"><i class="alert alert-info"></i><span>pop</span></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="span9">
+          <section id="switch">
+            <h1>switch</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>state.switch()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>NewState</td>
+                <td>Object</td>
+                <td><p>The new state object to switch to</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Switch from the currentState to a new state</p></div>
+          <pre><code class="language-javascript">state.switch = function(newState) {
+	if(enjin.currentState.leave) {
+		enjin.currentState.leave();
+	}
+
+	if(newState.enter) {
+		newState.enter();
+	}
+
+	enjin.currentState = newState;
+}</code></pre>
+          <section id="push">
+            <h1>push</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>state.push()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>NewState</td>
+                <td>Object</td>
+                <td><p>The new state object to switch to</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Switch to a new state and add it to the stack</p></div>
+          <pre><code class="language-javascript">state.push = function(newState) {
+	this.stack.push(newState);
+	enjin.currentState = this.stack[this.stack.length-1];
+}</code></pre>
+          <section id="pop">
+            <h1>pop</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>state.pop()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <div class="description"><p>Remove the current state from the stack and switch to the previous one</p></div>
+          <pre><code class="language-javascript">state.pop = function() {
+	this.stack.pop();
+	enjin.currentState = this.stack[this.stack.length-1];
+}
+
+module.exports = state;</code></pre>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p>Documentation generated with <a href="https://github.com/mr-doc/mr-doc">Mr. Doc </a> created by <a href="https://twitter.com/FGRibreau" data-show-count="false" class="twitter-follow-button">Francois-Guillaume Ribreau </a></p>
+        <p>Mr. Doc is sponsored by <a href="http://bringr.net/?btt" title="Outil d'analyse des réseaux sociaux" class="bringr">Bringr </a> and <a href="https://redsmin.com/?btt" title="Full Redis GUI" class="redsmin">Redsmin</a></p>
+        <p>Theme borrowed from Twitter Bootstrap</p>
+      </div>
+    </footer>
+    <script src="../js/twitter-widget.min.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/bootstrap-transition.min.js"></script>
+    <script src="../js/bootstrap-scrollspy.min.js"></script>
+    <script src="../js/bootstrap-dropdown.min.js"></script>
+    <script src="../js/bootstrap-collapse.min.js"></script>
+    <script src="../js/bootstrap-affix.min.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <script src="../js/index.min.js"></script>
+  </body>
+</html>
