@@ -34,6 +34,16 @@ var camera = new enjin.Camera({
 	y:player.y
 });
 
+/*
+var partydude = new enjin.particle.Emitter(50, 50, {
+	//accel: 2,
+	vel: 45,
+	accely: -9.8,
+	velVariance: 0.05,
+	lifeTime: 2
+}, 25);
+*/
+
 var gameState = {
 	update: function(dt) {
 		//player.x += Math.random() * player.speedx * dt;
@@ -41,6 +51,7 @@ var gameState = {
 
 		player2.x += Math.random() * player.speedx * dt;
 		player2.y += Math.random() * player.speedy * dt;
+		partydude.update(dt);
 
 		//camera.moveTo(player2.x, player2.y);
 	},
@@ -51,6 +62,7 @@ var gameState = {
 		ctx.drawImage(background, 0, 0); 
 		ctx.fillRect(player.x, player.y, 10, 10);
 		ctx.fillRect(player2.x, player2.y, 10, 10);
+		partydude.draw();
 
 		camera.detach();
 	}
@@ -72,9 +84,6 @@ enjin.timer.tween(2, player, {x: 120, y: 320}, "in-out-quad", function() {
 	})
 });
 
-enjin.particle.Emitter(50, 50, {
-	accel: 2
-}, 25);
 
 //start looping
 enjin.start();
