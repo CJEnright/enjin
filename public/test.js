@@ -34,17 +34,19 @@ var camera = new enjin.Camera({
 	y:player.y
 });
 
-/*
-var partydude = new enjin.particle.Emitter(50, 50, {
+var partydude = new enjin.particle.Emitter(250, 250, {
 	//accel: 2,
-	vel: 45,
-	accely: -9.8,
+	vel: 100,
+	accel: 0,
 	velVariance: 0.05,
 	lifeTime: 2
-}, 25);
-*/
+}, 4, 2, enjin.util.toRadians(195), enjin.util.toRadians(15));
+
+var avgfps = 0;
+var totalframes = 0;
 
 var gameState = {
+	enter: function() {},
 	update: function(dt) {
 		//player.x += Math.random() * player.speedx * dt;
 		//player.y += Math.random() * player.speedy * dt;
@@ -53,10 +55,21 @@ var gameState = {
 		player2.y += Math.random() * player.speedy * dt;
 		partydude.update(dt);
 
+		if(totalframes > 600) {
+			totalframes = 0;
+			avgfps = 1/enjin.dt;
+		}
+
+		totalframes++;
+		avgfps -= avgfps / totalframes;
+		avgfps += 1/enjin.dt / totalframes;
+
 		//camera.moveTo(player2.x, player2.y);
 	},
 
 	render: function() {
+		ctx.fillText("Avg fps: " + avgfps, 20, 20);
+		ctx.fillText("Current fps: " + 1/enjin.dt, 20, 40);
 		camera.attach();
 
 		ctx.drawImage(background, 0, 0); 

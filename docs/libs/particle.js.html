@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" charset="utf-8">
+    <title>mr-doc</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/cayman.min.css">
+    <link rel="stylesheet" href="../css/prism.min.css">
+    <link rel="stylesheet" href="../css/index.min.css">
+    <link rel="stylesheet" href="../css/docs.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-responsive.min.css">
+  </head>
+  <body data-spy="scroll" data-target=".scrollspy">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container"><a class="brand">Mr. Doc</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right sponsored"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header id="overview" class="jumbotron subhead">
+      <div class="container">
+        <h1>mr-doc</h1>
+        <p class="lead"></p>
+      </div>
+    </header>
+    <div class="container">
+      <div class="row">
+        <div class="span3 bs-docs-sidebar">
+          <ul class="nav nav-list bs-docs-sidenav affix-top">
+            <li><a href="../index.html">Main</a></li>
+            <li><a href="../core.js.html">core.js</a></li>
+            <li><a href="../libs/camera.js.html">libs/camera.js</a></li>
+            <li><a href="../libs/collision.js.html">libs/collision.js</a></li>
+            <li class="active"><a href="../libs/particle.js.html">libs/particle.js</a></li>
+            <li><a href="../libs/state.js.html">libs/state.js</a></li>
+            <li><a href="../libs/text.js.html">libs/text.js</a></li>
+            <li><a href="../libs/timer.js.html">libs/timer.js</a></li>
+            <li><a href="../libs/util.js.html">libs/util.js</a></li>
+          </ul>
+          <div class="scrollspy">
+            <ul class="nav nav-list bs-docs-sidenav affix-top">
+              <li><a href="#Particle"><i class="alert alert-info"></i><span>Particle</span></a>
+              </li>
+              <li><a href="#Emitter"><i class="alert alert-info"></i><span>Emitter</span></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="span9">
+          <section id="Particle">
+            <h1>Particle</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Particle()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Options</td>
+                <td>Object</td>
+                <td><p>Object with options you need (look at source for all availible)</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Creates a particle to be spawned by an Emitter</p></div>
+          <pre><code class="language-javascript">particle.Particle = function(options) {
+	// If we're passed an update function use that
+	if(options.update) {
+		this.updateFunc = options.update;
+	}
+	else {
+		this.lifeTime = options.lifeTime || options.life || 5;
+		this.isAlive = true;
+		this.elapsedTime = 0;
+
+		this.angle = enjin.util.randomDecimal(options.minAngle, options.maxAngle);
+		this.angleCos = Math.cos(this.angle);
+		this.angleSin = Math.sin(this.angle);
+
+		// Linear position
+		this.x = options.x || 0;
+		this.y = options.y || 0;
+		this.velx = (options.velx || options.vel || 0) * this.angleCos;
+		this.vely = (options.vely || options.vel || 0) * this.angleSin;
+		this.velVariance = options.velVariance || options.variance || 0.005;
+		this.accelx = (options.accelx || options.accel || 0) * this.angleCos;
+		this.accely = (options.accely || options.accel || 0) * this.angleSin;
+		this.accelVariance = options.accelVariance || options.variance || 0.005;
+
+		// Radial position
+		this.rotation = options.rotation || 0;
+		this.rotationalVelocity = options.rotationalVelocity || options.rotvel || 0;
+		this.rotationalVelocityVariance = options.rotationalVelocityVariance || options.rotvelVariance || options.variance || 0.005;
+		this.rotationalAcceleration = options.rotationalAcceleration || options.rotaccel || 0;
+		this.rotationalAccelerationVariance = options.rotationalAcceleration || options.rotaccelVariance || options.variance || 0.005;
+
+		this.minVariance = options.minVariance || -0.005;
+	}
+
+	// Drawing
+	this.drawFunc = options.draw || function(ctx) { ctx.fillRect(this.x, this.y, 10, 10); }
+}
+
+particle.Particle.prototype.update = function(dt) {
+	this.accelx += this.accelx * enjin.util.randomDecimal(this.minVariance, this.accelVariance);
+	this.accely += this.accely * enjin.util.randomDecimal(this.minVariance, this.accelVariance);
+	this.velx += this.accelx * dt;
+	this.vely += this.accely * dt;
+	this.velx += this.velx * enjin.util.randomDecimal(this.minVariance, this.velVariance);
+	this.vely += this.vely * enjin.util.randomDecimal(this.minVariance, this.velVariance);
+	this.x += this.velx * dt;
+	this.y += this.vely * dt;
+
+	this.rotationalAcceleration += this.rotationalAcceleration * enjin.util.randomDecimal(this.minVariance, this.rotationalAccelerationVariance);
+	this.rotationalVelocity += this.rotationalAcceleration * dt;
+	this.rotationalVelocity += this.rotationalVelocity * enjin.util.randomDecimal(this.minVariance, this.rotationalVelocityVariance);
+	this.rotation += this.rotationalVelocity * dt;
+
+	this.elapsedTime += dt;
+	if(this.elapsedTime &gt;= this.lifeTime) {
+		this.isAlive = false;
+	}
+}
+
+particle.Particle.prototype.draw = function() {
+	//enjin.ctx.rotate(this.rotation);
+	this.drawFunc(enjin.ctx);
+	//enjin.ctx.rotate(-this.rotation);
+}</code></pre>
+          <section id="Emitter">
+            <h1>Emitter</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Emitter()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>X</td>
+                <td>Number</td>
+                <td><p>X coordinate to spawn particles at</p></td>
+              </tr>
+              <tr>
+                <td>Y</td>
+                <td>Number</td>
+                <td><p>Y coordinate to spawn particles at</p></td>
+              </tr>
+              <tr>
+                <td>Particle</td>
+                <td>Object</td>
+                <td><p>Particle object to spawn</p></td>
+              </tr>
+              <tr>
+                <td>MaxAlive</td>
+                <td>Number</td>
+                <td><p>Maximum number of particles to spawn</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Creates an Emitter to spawn Particles</p></div>
+          <pre><code class="language-javascript">particle.Emitter = function(x, y, particleOptions, maxAlive, spawnRate, angle, spread) {
+	this.x = x;
+	this.y = y;
+
+	this.maxAlive = maxAlive;
+	this.aliveParticles = [];
+	this.spawnRate = spawnRate || this.maxAlive / (particleOptions.lifeTime || particleOptions.life || 5);
+	this.timeSinceLastSpawn = 0;
+
+	this.particleOptions = particleOptions;
+	this.particleOptions.x = x;
+	this.particleOptions.y = y;
+
+	this.angle = angle || 0;
+	this.spread = spread || Math.PI;
+	this.particleOptions.minAngle = this.angle - this.spread / 2;
+	this.particleOptions.maxAngle = this.angle + this.spread / 2;
+}
+
+particle.Emitter.prototype.update = function(dt) {
+	this.timeSinceLastSpawn += dt;
+
+	// Update position
+	for(var i=0; i&lt;this.aliveParticles.length; i++) {
+		this.aliveParticles[i].update(dt);
+		
+		if(!this.aliveParticles[i].isAlive) {
+			this.aliveParticles.splice(i, 1);
+		}
+	}	
+
+	// Spawn new Particles
+	if(this.aliveParticles.length &lt; this.maxAlive) {
+		var maxToSpawn = Math.floor(this.spawnRate * this.timeSinceLastSpawn + 0.5);
+		
+		for(var i=0; i&lt;maxToSpawn; i++) {
+			this.aliveParticles.push(new enjin.particle.Particle(this.particleOptions));
+		}
+	}
+}
+
+particle.Emitter.prototype.draw = function() {
+	for(var i=0; i&lt;this.aliveParticles.length; i++) {
+		this.aliveParticles[i].draw();
+	}
+}
+
+// Don't make particles yourself, leave that for the library
+
+module.exports = particle;</code></pre>
+          <div class="description"></div>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p>Documentation generated with <a href="https://github.com/mr-doc/mr-doc">Mr. Doc </a> created by <a href="https://twitter.com/FGRibreau" data-show-count="false" class="twitter-follow-button">Francois-Guillaume Ribreau </a></p>
+        <p>Mr. Doc is sponsored by <a href="http://bringr.net/?btt" title="Outil d'analyse des réseaux sociaux" class="bringr">Bringr </a> and <a href="https://redsmin.com/?btt" title="Full Redis GUI" class="redsmin">Redsmin</a></p>
+        <p>Theme borrowed from Twitter Bootstrap</p>
+      </div>
+    </footer>
+    <script src="../js/twitter-widget.min.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/bootstrap-transition.min.js"></script>
+    <script src="../js/bootstrap-scrollspy.min.js"></script>
+    <script src="../js/bootstrap-dropdown.min.js"></script>
+    <script src="../js/bootstrap-collapse.min.js"></script>
+    <script src="../js/bootstrap-affix.min.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <script src="../js/index.min.js"></script>
+  </body>
+</html>

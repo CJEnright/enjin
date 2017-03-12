@@ -342,14 +342,18 @@ particle.Particle = function(options) {
 		this.isAlive = true;
 		this.elapsedTime = 0;
 
+		this.angle = enjin.util.randomDecimal(options.minAngle, options.maxAngle);
+		this.angleCos = Math.cos(this.angle);
+		this.angleSin = Math.sin(this.angle);
+
 		// Linear position
 		this.x = options.x || 0;
 		this.y = options.y || 0;
-		this.velx = options.velx || options.vel || 0;
-		this.vely = options.vely || options.vel || 0;
+		this.velx = (options.velx || options.vel || 0) * this.angleCos;
+		this.vely = (options.vely || options.vel || 0) * this.angleSin;
 		this.velVariance = options.velVariance || options.variance || 0.005;
-		this.accelx = options.accelx || options.accel || 0;
-		this.accely = options.accely || options.accel || 0;
+		this.accelx = (options.accelx || options.accel || 0) * this.angleCos;
+		this.accely = (options.accely || options.accel || 0) * this.angleSin;
 		this.accelVariance = options.accelVariance || options.variance || 0.005;
 
 		// Radial position
@@ -388,9 +392,9 @@ particle.Particle.prototype.update = function(dt) {
 }
 
 particle.Particle.prototype.draw = function() {
-	enjin.ctx.rotate(this.rotation);
+	//enjin.ctx.rotate(this.rotation);
 	this.drawFunc(enjin.ctx);
-	enjin.ctx.rotate(-this.rotation);
+	//enjin.ctx.rotate(-this.rotation);
 }
 
 /**
@@ -400,17 +404,28 @@ particle.Particle.prototype.draw = function() {
  * @param {Object} Particle Particle object to spawn
  * @param {Number} MaxAlive Maximum number of particles to spawn
  */
-particle.Emitter = function(x, y, particleOptions, maxAlive) {
+particle.Emitter = function(x, y, particleOptions, maxAlive, spawnRate, angle, spread) {
 	this.x = x;
 	this.y = y;
+
 	this.maxAlive = maxAlive;
+	this.aliveParticles = [];
+	this.spawnRate = spawnRate || this.maxAlive / (particleOptions.lifeTime || particleOptions.life || 5);
+	this.timeSinceLastSpawn = 0;
+
 	this.particleOptions = particleOptions;
 	this.particleOptions.x = x;
 	this.particleOptions.y = y;
-	this.aliveParticles = [];
+
+	this.angle = angle || 0;
+	this.spread = spread || Math.PI;
+	this.particleOptions.minAngle = this.angle - this.spread / 2;
+	this.particleOptions.maxAngle = this.angle + this.spread / 2;
 }
 
 particle.Emitter.prototype.update = function(dt) {
+	this.timeSinceLastSpawn += dt;
+
 	// Update position
 	for(var i=0; i<this.aliveParticles.length; i++) {
 		this.aliveParticles[i].update(dt);
@@ -422,9 +437,9 @@ particle.Emitter.prototype.update = function(dt) {
 
 	// Spawn new Particles
 	if(this.aliveParticles.length < this.maxAlive) {
-		var toSpawn = enjin.util.random(0, this.maxAlive - this.aliveParticles.length);
+		var maxToSpawn = Math.floor(this.spawnRate * this.timeSinceLastSpawn + 0.5);
 		
-		for(var i=0; i<toSpawn; i++) {
+		for(var i=0; i<maxToSpawn; i++) {
 			this.aliveParticles.push(new enjin.particle.Particle(this.particleOptions));
 		}
 	}
@@ -667,6 +682,14 @@ util.random = function(max, min) {
 
 util.randomDecimal = function(max, min) {
 	return Math.random() * (max - min) + min;
+}
+
+util.toRadians = function(deg) {
+	return deg * Math.PI / 180;
+}
+
+util.toDegrees = function(rad) {
+  return rad * 180 / Math.PI;
 }
 
 module.exports = util;

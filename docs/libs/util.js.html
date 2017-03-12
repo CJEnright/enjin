@@ -36,33 +36,45 @@
             <li><a href="../libs/collision.js.html">libs/collision.js</a></li>
             <li><a href="../libs/particle.js.html">libs/particle.js</a></li>
             <li><a href="../libs/state.js.html">libs/state.js</a></li>
-            <li class="active"><a href="../libs/text.js.html">libs/text.js</a></li>
+            <li><a href="../libs/text.js.html">libs/text.js</a></li>
             <li><a href="../libs/timer.js.html">libs/timer.js</a></li>
-            <li><a href="../libs/util.js.html">libs/util.js</a></li>
+            <li class="active"><a href="../libs/util.js.html">libs/util.js</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#text"><i class="alert alert-success"></i><span>text</span></a>
+              <li><a href="#util"><i class="alert alert-success"></i><span>util</span></a>
               </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="text">
-            <h1>text</h1>
+          <section id="util">
+            <h1>util</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>&nbsp;</span><span>text</span><span>&nbsp;</span>
+              <div class="label label-success radius ctx-type">declaration</div><span>&nbsp;</span><span>util</span><span>&nbsp;</span>
             </p>
           </section>
-          <div class="description"><p>To add:<br />height</p></div>
-          <pre><code class="language-javascript">var text = {};
+          <div class="description"></div>
+          <pre><code class="language-javascript">var util = {}
 
-text.getWidth = function(string) {
-	return ctx.measureText(string).width;
+util.random = function(max, min) {
+	return Math.floor(Math.random() * (max - min)) + min;
 }
 
-module.exports = text;</code></pre>
+util.randomDecimal = function(max, min) {
+	return Math.random() * (max - min) + min;
+}
+
+util.toRadians = function(deg) {
+	return deg * Math.PI / 180;
+}
+
+util.toDegrees = function(rad) {
+  return rad * 180 / Math.PI;
+}
+
+module.exports = util;</code></pre>
         </div>
       </div>
     </div>
