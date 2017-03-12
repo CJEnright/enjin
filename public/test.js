@@ -42,6 +42,14 @@ var partydude = new enjin.particle.Emitter(250, 250, {
 	lifeTime: 2
 }, 4, 2, enjin.util.toRadians(195), enjin.util.toRadians(15));
 
+var pulseDude = new enjin.particle.Pulse(100, 100, {
+	vel: 100,
+	accel: 2,
+	lifeTimeMinVariance: -2,
+	lifeTimeVariance: 2,
+	lifeTime: 0.5
+}, 50,  enjin.util.toRadians(270), enjin.util.toRadians(360));
+
 var avgfps = 0;
 var totalframes = 0;
 
@@ -54,6 +62,7 @@ var gameState = {
 		player2.x += Math.random() * player.speedx * dt;
 		player2.y += Math.random() * player.speedy * dt;
 		partydude.update(dt);
+		pulseDude.update(dt);
 
 		if(totalframes > 600) {
 			totalframes = 0;
@@ -76,6 +85,7 @@ var gameState = {
 		ctx.fillRect(player.x, player.y, 10, 10);
 		ctx.fillRect(player2.x, player2.y, 10, 10);
 		partydude.draw();
+		pulseDude.draw();
 
 		camera.detach();
 	}

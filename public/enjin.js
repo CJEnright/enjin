@@ -338,7 +338,11 @@ particle.Particle = function(options) {
 		this.updateFunc = options.update;
 	}
 	else {
-		this.lifeTime = options.lifeTime || options.life || 5;
+		this.minVariance = options.minVariance || -0.005;
+
+		this.lifeTimeVariance = options.lifeTimeVariance || 0;
+		this.lifeTimeMinVariance = options.lifeTimeMinVariance || options.minVariance || 0;
+		this.lifeTime = (options.lifeTime || options.life || 5) + (options.lifeTime || options.life || 5) * enjin.util.randomDecimal(this.minVariance, this.lifeTimeVariance);
 		this.isAlive = true;
 		this.elapsedTime = 0;
 
@@ -362,8 +366,6 @@ particle.Particle = function(options) {
 		this.rotationalVelocityVariance = options.rotationalVelocityVariance || options.rotvelVariance || options.variance || 0.005;
 		this.rotationalAcceleration = options.rotationalAcceleration || options.rotaccel || 0;
 		this.rotationalAccelerationVariance = options.rotationalAcceleration || options.rotaccelVariance || options.variance || 0.005;
-
-		this.minVariance = options.minVariance || -0.005;
 	}
 
 	// Drawing
@@ -448,6 +450,45 @@ particle.Emitter.prototype.update = function(dt) {
 particle.Emitter.prototype.draw = function() {
 	for(var i=0; i<this.aliveParticles.length; i++) {
 		this.aliveParticles[i].draw();
+	}
+}
+
+// A pulse is a single "burst" of particles
+particle.Pulse = function(x, y, particleOptions, numberToSpawn, angle, spread) {
+	this.x = x;
+	this.y = y;
+
+	this.numberToSpawn = numberToSpawn;
+	this.particles = [];
+
+	this.particleOptions = particleOptions;
+	this.particleOptions.x = x;
+	this.particleOptions.y = y;
+
+	this.angle = angle || 0;
+	this.spread = spread || Math.PI;
+	this.particleOptions.minAngle = this.angle - this.spread / 2;
+	this.particleOptions.maxAngle = this.angle + this.spread / 2;
+
+	// Init particles
+	for(var i=0; i<this.numberToSpawn; i++) {
+		this.particles.push(new enjin.particle.Particle(this.particleOptions));
+	}
+}
+
+particle.Pulse.prototype.update = function(dt) {
+	for(var i=0; i<this.particles.length; i++) {
+		this.particles[i].update(dt);
+
+		if(!this.particles[i].isAlive) {
+			this.particles.splice(i, 1);
+		}
+	}
+}
+
+particle.Pulse.prototype.draw = function() {
+	for(var i=0; i<this.particles.length; i++) {
+		this.particles[i].draw();
 	}
 }
 
