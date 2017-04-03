@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width" charset="utf-8">
-    <title>mr-doc</title>
+    <title>Enjin</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/cayman.min.css">
     <link rel="stylesheet" href="css/prism.min.css">
@@ -22,7 +22,7 @@
     </div>
     <header id="overview" class="jumbotron subhead">
       <div class="container">
-        <h1>mr-doc</h1>
+        <h1>Enjin</h1>
         <p class="lead"></p>
       </div>
     </header>
@@ -58,6 +58,12 @@
           </div>
         </div>
         <div class="span9">
+          <div class="description"><p>Enjin, a small JavaScript game engine</p></div>
+          <pre><code class="language-javascript">// enjin namespace does need to be reserved
+window.enjin = {
+	version: &quot;0.2.5&quot;,
+	//60 fps, only used if requestAnimFrame isn't supported
+	defaultDelay: 1000/60,</code></pre>
           <section id="attach">
             <h1>attach</h1>
             <h5 class="subheader"></h5>
@@ -83,13 +89,13 @@
           </table>
           <div class="description"><p>Attach the enjin instance to a canvas</p></div>
           <pre><code class="language-javascript">attach: function(canvas) {
-	this.canvas = canvas;
-	this.width = canvas.width || 0;
-	this.height = canvas.height || 0;
-	this.ctx = this.canvas.getContext(&quot;2d&quot;);
+	enjin.canvas = canvas;
+	enjin.width = canvas.width || 0;
+	enjin.height = canvas.height || 0;
+	enjin.ctx = enjin.canvas.getContext(&quot;2d&quot;);
 
-	// Create the default state (basically trying to prevent errors incase user is stupid)
-	this.currentState = {
+	// Create the default state (basically trying to prevent errors)
+	enjin.currentState = {
 		update: function(dt) {},
 		render: function(dt) {}
 	};
@@ -107,12 +113,10 @@
 	enjin.frameID = requestAnimFrame(enjin.loop);
 
 	// Let the currentState know we're starting (resuming)
-	if(enjin.currentState.resume) {
-		enjin.currentState.resume();
+	if(enjin.currentState.start) {
+		enjin.currentState.start();
 	}
-},
-
-//A potentially better way to loop is here http://gameprogrammingpatterns.com/game-loop.html#play-catch-up</code></pre>
+},</code></pre>
           <section id="loop">
             <h1>loop</h1>
             <h5 class="subheader"></h5>
@@ -122,7 +126,6 @@
           </section>
           <div class="description"><p>Loop called by requestAnimFrame, finds dt then calls updates and renders</p></div>
           <pre><code class="language-javascript">loop: function() { 
-	// Can't use &quot;this&quot; here because it's being called in the window's context
 	enjin.now = performance.now();
 	enjin.dt = (enjin.now - enjin.previous)/1000 || 0;
 	enjin.previous = enjin.now;
@@ -137,7 +140,7 @@
 	enjin.currentState.update(enjin.dt);
 	enjin.currentState.render(enjin.dt);
 	
-	//this thing is pretty smart, it should use the monitors refresh rate as the fps
+	//this thing is pretty smart, it should use the monitor's refresh rate as the fps
 	enjin.frameID = requestAnimFrame(enjin.loop);
 },</code></pre>
           <section id="stop">
@@ -152,8 +155,8 @@
 	cancelAnimFrame(this.frameID);
 
 	// Let the currentState know we're stopping (pausing)
-	if(enjin.currentState.pause) {
-		enjin.currentState.pause();
+	if(enjin.currentState.stop) {
+		enjin.currentState.stop();
 	}
 },</code></pre>
           <section id="watchForResize">
@@ -163,17 +166,33 @@
               <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>watchForResize()</span><span>&nbsp;</span>
             </p>
           </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Callback</td>
+                <td>Function</td>
+                <td><p>Function to call when the window changes size</p></td>
+              </tr>
+            </tbody>
+          </table>
           <div class="description"><p>Helper for watching window resizing</p></div>
           <pre><code class="language-javascript">watchForResize: function(func) {
 	window.onresize = func;
 }
 };
 
-
+// Library requires
 enjin.util = require('./libs/util');
-enjin.Camera = require('./libs/camera'); //kool
-enjin.timer = require('./libs/timer'); //not kool
-enjin.collision = require('./libs/collision'); //kool
+enjin.Camera = require('./libs/camera');
+enjin.timer = require('./libs/timer');
+enjin.collision = require('./libs/collision');
 enjin.state = require('./libs/state');
 enjin.particle = require('./libs/particle');</code></pre>
           <section id="requestAnimFrame">
@@ -185,25 +204,24 @@ enjin.particle = require('./libs/particle');</code></pre>
           </section>
           <div class="description"><p>----------[ POLLYFILLS ]----------</p></div>
           <pre><code class="language-javascript">window.requestAnimFrame = window.requestAnimationFrame
-    || window.webkitRequestAnimationFrame
-    || window.msRequestAnimationFrame
-    || window.mozRequestAnimationFrame 
-    || window.oRequestAnimationFrame  
-    || function(callback) { return window.setTimeout(callback, enjin.defaultDelay); }; 
+		|| window.webkitRequestAnimationFrame
+		|| window.msRequestAnimationFrame
+		|| window.mozRequestAnimationFrame 
+		|| window.oRequestAnimationFrame	
+		|| function(callback) { return window.setTimeout(callback, enjin.defaultDelay); }; 
 
 window.cancelAnimFrame = window.cancelAnimationFrame
-    || window.webkitCancelAnimationFrame 
-    || window.msCancelAnimationFrame 
-    || window.mozCancelAnimationFrame 
-    || window.oCancelAnimationFrame 
-    || function(id) { clearTimeout(id); };
+		|| window.webkitCancelAnimationFrame 
+		|| window.msCancelAnimationFrame 
+		|| window.mozCancelAnimationFrame 
+		|| window.oCancelAnimationFrame 
+		|| function(id) { clearTimeout(id); };
 
 window.performance.now = performance.now
 	|| performance.webkitNow
 	|| performance.msNow
 	|| performance.mozNow
 	|| function() { return Date.now() || +(new Date()); };</code></pre>
-          <div class="description"></div>
         </div>
       </div>
     </div>

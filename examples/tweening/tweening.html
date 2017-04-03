@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Enjin tweening example</title>
+</head>
+<body>
+	<canvas id="gameCanvas" style="position:absolute; top:0; left:0; border: 1px solid black;"></canvas>
+	<div style="position: absolute; left: calc(50% + 10px); top: 0; height: calc(100% - 5px); width: calc(50% + -10px); padding-top: 5px">
+		<h2>Change the tween settings:</h2>
+
+		<div>
+			<select id="inOutSelect" onchange="inOutChange()">
+			  <option value="in-">in</option>
+			  <option value="out-">out</option>
+			</select>
+
+			<select id="tweenMethodSelect" onchange="tweenMethodChange()">
+			  <option value="linear">linear</option>
+			  <option value="quad">quad</option>
+			  <option value="cubic">cubic</option>
+			  <option value="sin">sin</option>
+			  <option value="expo">expo</option>
+			  <option value="circ">circ</option>
+			</select>
+		</div>
+
+		<br>
+
+		<div>
+			<a href="https://github.com/CJEnright/enjin/examples/tweening">Check out the source</a>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../public/enjin.js"></script>
+	<script type="text/javascript" src="./tweening.js"></script>
+</body>
+</html>

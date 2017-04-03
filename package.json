@@ -1,16 +1,13 @@
 {
   "name": "Enjin",
   "version": "0.0.1",
-  "description": "JS game engine",
-  "main": "main.js",
+  "description": "Minimal (and hopefully functional) JS game engine.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "browserify ./src/core.js > ./public/enjin.js",
-    "docs": "mr-doc -s src/ -o docs/"
+    "build": "browserify ./src/core.js > ./public/enjin.js",
+    "docs": "mr-doc -n Enjin -s src/ -o docs/"
   },
   "author": "C.J. Enright",
-  "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "browserify": "^13.0.1",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",

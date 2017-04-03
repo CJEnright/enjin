@@ -36,18 +36,19 @@ timer.Timer.prototype.stop = function(dt) {
 	if(dt) {
 		this.callback(dt);
 	}
+
 	// Set variables to cleanly delete (mainly stop calling functions)
 	this.callback = function() {};
 	this.updateCallback = function() {};
 	this.isDone = true; // Mark as finished
-
-	// Being able to self delete would be best practice, but you can't do that in js :/
 }
 
+// Users either create their own Timers, or use methods below
+// If they do the latter, they created Timers will be put in this array
 timer.timers = [];
 
 /**
- * Helper function to update all timers, delete them if they're done
+ * Helper function called internally to update all timers and delete them if they're done
  * @param {Number} DeltaTime Time since last update
  */
 timer.updateAll = function(dt) {
@@ -62,11 +63,11 @@ timer.updateAll = function(dt) {
 
 /**
  * Call a function after a given time in seconds
- * @param {Number} Time How long to wait in seconds before calling the function
+ * @param {Number} Delay How long to wait in seconds before calling the function
  * @param {Function} Callback Function to call once the time has passed
  */
-timer.after = function(length, callback) {
-	var timerObject = new this.Timer(length, callback);
+timer.after = function(delay, callback) {
+	var timerObject = new this.Timer(delay, callback);
 	this.timers.push(timerObject);
 	return timerObject;
 }
@@ -84,24 +85,25 @@ timer.during = function(duration, updateCallback, callback) {
 	return timerObject;
 }
 
-// TWEENING!!! heads up, confusing ish ahead
+/* TWEENING */
+
 /**
  * Change an object's value over time in a specific way
  * @param {Number} Duration Time in seconds the transition should take
- * @param {Object} Object Object we should be watching
+ * @param {Object} Object Object we should be tweening
  * @param {Object} Target Endstate of object we want to reach
- * @param {String} Method Tweening method to use
+ * @param {String} Method Tweening method to use (or make custom with a function)
  * @param {Function} Callback Function to call once we're done
  */
 timer.tween = function(duration, object, target, method, callback) {
 	// Tweening is a lot like using the during method
 	// If method is a function use that, otherwise assume a string and figure out what the user is saying
-	var updateMethod = typeof(method) === "function" ? method : this._getUpdateFunction(method);
+	var updateMethod = typeof(method) === "function" ? method : this.__getUpdateFunction(method);
 
 	var updateCallback = function(dt) {
-		this.s = updateMethod(Math.min(1, this.elapsed/this.duration));
-		this.ds = this.s - (this.prevS || 0);
-		this.prevS = this.s;
+		this.scalar = updateMethod(Math.min(1, this.elapsed/this.duration));
+		this.ds = this.scalar - (this.prevS || 0);
+		this.prevScalar = this.scalar;
 
 		for(prop in target) {
 			object[prop] += this.deltas[prop] * this.ds;
@@ -120,56 +122,48 @@ timer.tween = function(duration, object, target, method, callback) {
 	return timerObject;
 }
 
+// Functions based on HUMP's tweening methods, can be found here: https://github.com/vrld/hump
 // Helper function to get update method
-// this could be a lot cleaner (esp the in out part)
-timer._getUpdateFunction = function(methodString) {
-	// This is a lot of balogna that's p confusing.  dw about it
+// Don't exposed to generated docs
+timer.__getUpdateFunction = function(methodString) {
 	if(this.tweenMethods[methodString]) {
 		return this.tweenMethods[methodString];
 	}
-	// These are esp stupid and could be simplified really quickly (but y tho)
-	else if(methodString.substr(0, 7) === "in-out-") {
-		var method = this.tweenMethods[methodString.substr(7, methodString.length)];
-		return this.tweenMethods.chain(method, this.tweenMethods.out(method));
-	}
-	else if(methodString.substr(0, 7) === "out-in-") {
-		var method = this.tweenMethods[methodString.substr(7, methodString.length)];
-		return this.tweenMethods.chain(this.tweenMethods.out(method), method);
+	else if(methodString.substr(0, 3) === "in-") {
+		var newMethodString = methodString.substr(3, methodString.length);
+		return this.__getUpdateFunction(newMethodString);
 	}
 	else if(methodString.substr(0, 4) === "out-") {
-		var method = this.tweenMethods[methodString.substr(4, methodString.length)];
-		return this.tweenMethods.out(method);
-	}
-	else if(methodString.substr(0, 3) === "in-") {
-		var method = this.tweenMethods[methodString.substr(3, methodString.length)];
-		return method;
+		var newMethodString = methodString.substr(4, methodString.length);
+		return this.tweenMethods.out(this.__getUpdateFunction(newMethodString));
 	}
 }
 
 timer.tweenMethods = {
-	linear: function(s) { return s },
-	quad: function(s) { return s*s },
-	cubic: function(s) { return s*s*s },
-	sin: function(s) { return 1-Math.cos(s*Math.PI/2) },
-	expo: function(s) { return Math.pow(2, 10*(s-1)) },
-	circ: function(s) { return 1 - Math.sqrt(1-s*s) },
-	out: function(f) {
-		// Reverses a function
-		return function(s) {
-			return 1 - f(1-s) 
-		}
+	linear: function(scalar) { 
+		return scalar 
 	},
-	chain: function(f1, f2) {
-		return function(s) { 
-			return (s < .5 && f1(2*s) || 1 + f2(2*s-1)) * .5
+	quad: function(scalar) { 
+		return scalar*scalar 
+	},
+	cubic: function(scalar) { 
+		return scalar*scalar*scalar 
+	},
+	sin: function(scalar) { 
+		return 1-Math.cos(scalar*Math.PI/2) 
+	},
+	expo: function(scalar) { 
+		return Math.pow(2, 10*(scalar-1)) 
+	},
+	circ: function(scalar) { 
+		return 1 - Math.sqrt(1-scalar*scalar) 
+	},
+	out: function(f) {
+		return function(scalar) {
+			return 1 - f(1-scalar) 
 		}
 	}
 }
 
 
 module.exports = timer;
-
-/*
-so player = {x: 0, y:0}
-tween player {x: 12 y: 6}
-*/

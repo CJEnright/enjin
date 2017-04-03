@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width" charset="utf-8">
-    <title>mr-doc</title>
+    <title>Enjin</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/cayman.min.css">
     <link rel="stylesheet" href="../css/prism.min.css">
@@ -22,7 +22,7 @@
     </div>
     <header id="overview" class="jumbotron subhead">
       <div class="container">
-        <h1>mr-doc</h1>
+        <h1>Enjin</h1>
         <p class="lead"></p>
       </div>
     </header>
@@ -44,7 +44,21 @@
             <ul class="nav nav-list bs-docs-sidenav affix-top">
               <li><a href="#Particle"><i class="alert alert-info"></i><span>Particle</span></a>
               </li>
+              <li><a href="#update"><i class="alert alert-info"></i><span>update</span></a>
+              </li>
+              <li><a href="#draw"><i class="alert alert-info"></i><span>draw</span></a>
+              </li>
               <li><a href="#Emitter"><i class="alert alert-info"></i><span>Emitter</span></a>
+              </li>
+              <li><a href="#update"><i class="alert alert-info"></i><span>update</span></a>
+              </li>
+              <li><a href="#draw"><i class="alert alert-info"></i><span>draw</span></a>
+              </li>
+              <li><a href="#Pulse"><i class="alert alert-info"></i><span>Pulse</span></a>
+              </li>
+              <li><a href="#update"><i class="alert alert-info"></i><span>update</span></a>
+              </li>
+              <li><a href="#draw"><i class="alert alert-info"></i><span>draw</span></a>
               </li>
             </ul>
           </div>
@@ -80,63 +94,78 @@
 		this.updateFunc = options.update;
 	}
 	else {
-		this.lifeTime = options.lifeTime || options.life || 5;
+		this.lifeTimeVariance = options.lifeTimeVariance || 0;
+		this.lifeTime = (options.lifeTime || options.life || 5) + (options.lifeTime || options.life || 5) * enjin.util.randomDecimal(-this.lifeTimeVariance, this.lifeTimeVariance);
 		this.isAlive = true;
 		this.elapsedTime = 0;
 
-		this.angle = enjin.util.randomDecimal(options.minAngle, options.maxAngle);
-		this.angleCos = Math.cos(this.angle);
-		this.angleSin = Math.sin(this.angle);
+		this.direction = enjin.util.randomDecimal(options.mindirection, options.maxdirection);
+		this.directionCos = Math.cos(this.direction);
+		this.directionSin = Math.sin(this.direction);
 
 		// Linear position
 		this.x = options.x || 0;
 		this.y = options.y || 0;
-		this.velx = (options.velx || options.vel || 0) * this.angleCos;
-		this.vely = (options.vely || options.vel || 0) * this.angleSin;
+		this.velx = (options.velx || options.vel || 0) * this.directionCos;
+		this.vely = (options.vely || options.vel || 0) * this.directionSin;
 		this.velVariance = options.velVariance || options.variance || 0.005;
-		this.accelx = (options.accelx || options.accel || 0) * this.angleCos;
-		this.accely = (options.accely || options.accel || 0) * this.angleSin;
+		this.accelx = (options.accelx || options.accel || 0) * this.directionCos;
+		this.accely = (options.accely || options.accel || 0) * this.directionSin;
 		this.accelVariance = options.accelVariance || options.variance || 0.005;
-
-		// Radial position
-		this.rotation = options.rotation || 0;
-		this.rotationalVelocity = options.rotationalVelocity || options.rotvel || 0;
-		this.rotationalVelocityVariance = options.rotationalVelocityVariance || options.rotvelVariance || options.variance || 0.005;
-		this.rotationalAcceleration = options.rotationalAcceleration || options.rotaccel || 0;
-		this.rotationalAccelerationVariance = options.rotationalAcceleration || options.rotaccelVariance || options.variance || 0.005;
-
-		this.minVariance = options.minVariance || -0.005;
 	}
 
 	// Drawing
 	this.drawFunc = options.draw || function(ctx) { ctx.fillRect(this.x, this.y, 10, 10); }
-}
-
-particle.Particle.prototype.update = function(dt) {
-	this.accelx += this.accelx * enjin.util.randomDecimal(this.minVariance, this.accelVariance);
-	this.accely += this.accely * enjin.util.randomDecimal(this.minVariance, this.accelVariance);
+}</code></pre>
+          <section id="update">
+            <h1>update</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Particle.prototype.update()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>DeltaTime</td>
+                <td>Number</td>
+                <td><p>Time since last update</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Update a Particle&#39;s position</p></div>
+          <pre><code class="language-javascript">particle.Particle.prototype.update = function(dt) {
+	this.accelx += this.accelx * enjin.util.randomDecimal(-this.accelVariance, this.accelVariance);
+	this.accely += this.accely * enjin.util.randomDecimal(-this.accelVariance, this.accelVariance);
 	this.velx += this.accelx * dt;
 	this.vely += this.accely * dt;
-	this.velx += this.velx * enjin.util.randomDecimal(this.minVariance, this.velVariance);
-	this.vely += this.vely * enjin.util.randomDecimal(this.minVariance, this.velVariance);
+	this.velx += this.velx * enjin.util.randomDecimal(-this.velVariance, this.velVariance);
+	this.vely += this.vely * enjin.util.randomDecimal(-this.velVariance, this.velVariance);
 	this.x += this.velx * dt;
 	this.y += this.vely * dt;
-
-	this.rotationalAcceleration += this.rotationalAcceleration * enjin.util.randomDecimal(this.minVariance, this.rotationalAccelerationVariance);
-	this.rotationalVelocity += this.rotationalAcceleration * dt;
-	this.rotationalVelocity += this.rotationalVelocity * enjin.util.randomDecimal(this.minVariance, this.rotationalVelocityVariance);
-	this.rotation += this.rotationalVelocity * dt;
 
 	this.elapsedTime += dt;
 	if(this.elapsedTime &gt;= this.lifeTime) {
 		this.isAlive = false;
 	}
-}
-
-particle.Particle.prototype.draw = function() {
-	//enjin.ctx.rotate(this.rotation);
+}</code></pre>
+          <section id="draw">
+            <h1>draw</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Particle.prototype.draw()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <div class="description"><p>Draw a single particle</p></div>
+          <pre><code class="language-javascript">particle.Particle.prototype.draw = function() {
 	this.drawFunc(enjin.ctx);
-	//enjin.ctx.rotate(-this.rotation);
 }</code></pre>
           <section id="Emitter">
             <h1>Emitter</h1>
@@ -165,41 +194,69 @@ particle.Particle.prototype.draw = function() {
                 <td><p>Y coordinate to spawn particles at</p></td>
               </tr>
               <tr>
-                <td>Particle</td>
+                <td>ParticleOptions</td>
                 <td>Object</td>
-                <td><p>Particle object to spawn</p></td>
+                <td><p>Particle options to spawn particle with</p></td>
               </tr>
               <tr>
-                <td>MaxAlive</td>
+                <td>Direction</td>
                 <td>Number</td>
-                <td><p>Maximum number of particles to spawn</p></td>
+                <td><p>The angle to send the particles off at</p></td>
+              </tr>
+              <tr>
+                <td>Spread</td>
+                <td>Number</td>
+                <td><p>Angle of spread for the particles</p></td>
               </tr>
             </tbody>
           </table>
           <div class="description"><p>Creates an Emitter to spawn Particles</p></div>
-          <pre><code class="language-javascript">particle.Emitter = function(x, y, particleOptions, maxAlive, spawnRate, angle, spread) {
+          <pre><code class="language-javascript">particle.Emitter = function(x, y, particleOptions, maxAlive, spawnRate, direction, spread) {
 	this.x = x;
 	this.y = y;
 
 	this.maxAlive = maxAlive;
 	this.aliveParticles = [];
-	this.spawnRate = spawnRate || this.maxAlive / (particleOptions.lifeTime || particleOptions.life || 5);
+	this.spawnRate = 1 / (spawnRate || this.maxAlive / (particleOptions.lifeTime || particleOptions.life || 5));
 	this.timeSinceLastSpawn = 0;
 
 	this.particleOptions = particleOptions;
 	this.particleOptions.x = x;
 	this.particleOptions.y = y;
 
-	this.angle = angle || 0;
+	this.direction = direction || 0;
 	this.spread = spread || Math.PI;
-	this.particleOptions.minAngle = this.angle - this.spread / 2;
-	this.particleOptions.maxAngle = this.angle + this.spread / 2;
-}
-
-particle.Emitter.prototype.update = function(dt) {
+	this.particleOptions.mindirection = this.direction - this.spread / 2;
+	this.particleOptions.maxdirection = this.direction + this.spread / 2;
+}</code></pre>
+          <section id="update">
+            <h1>update</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Emitter.prototype.update()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>DeltaTime</td>
+                <td>Number</td>
+                <td><p>Time since last update</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Update an Emitter&#39;s particles</p></div>
+          <pre><code class="language-javascript">particle.Emitter.prototype.update = function(dt) {
 	this.timeSinceLastSpawn += dt;
 
-	// Update position
+	// Update position and kill
 	for(var i=0; i&lt;this.aliveParticles.length; i++) {
 		this.aliveParticles[i].update(dt);
 		
@@ -209,25 +266,146 @@ particle.Emitter.prototype.update = function(dt) {
 	}	
 
 	// Spawn new Particles
-	if(this.aliveParticles.length &lt; this.maxAlive) {
-		var maxToSpawn = Math.floor(this.spawnRate * this.timeSinceLastSpawn + 0.5);
-		
-		for(var i=0; i&lt;maxToSpawn; i++) {
-			this.aliveParticles.push(new enjin.particle.Particle(this.particleOptions));
-		}
+	while(this.timeSinceLastSpawn &gt; this.spawnRate &amp;&amp; this.aliveParticles.length &lt; this.maxAlive) {
+		this.aliveParticles.push(new enjin.particle.Particle(this.particleOptions));
+		this.timeSinceLastSpawn -= this.spawnRate;
 	}
-}
-
-particle.Emitter.prototype.draw = function() {
+}</code></pre>
+          <section id="draw">
+            <h1>draw</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Emitter.prototype.draw()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <div class="description"><p>Draw an Emitter&#39;s particles</p></div>
+          <pre><code class="language-javascript">particle.Emitter.prototype.draw = function() {
 	for(var i=0; i&lt;this.aliveParticles.length; i++) {
 		this.aliveParticles[i].draw();
 	}
 }
 
-// Don't make particles yourself, leave that for the library
+// A pulse is a single &quot;burst&quot; of particles</code></pre>
+          <section id="Pulse">
+            <h1>Pulse</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Pulse()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>X</td>
+                <td>Number</td>
+                <td><p>X coordinate to spawn particles at</p></td>
+              </tr>
+              <tr>
+                <td>Y</td>
+                <td>Number</td>
+                <td><p>Y coordinate to spawn particles at</p></td>
+              </tr>
+              <tr>
+                <td>ParticleOptions</td>
+                <td>Object</td>
+                <td><p>Particle options to spawn particle with</p></td>
+              </tr>
+              <tr>
+                <td>NumberToSpawn</td>
+                <td>Number</td>
+                <td><p>Total number of particles to spawn</p></td>
+              </tr>
+              <tr>
+                <td>Direction</td>
+                <td>Number</td>
+                <td><p>The angle to send the particles off at</p></td>
+              </tr>
+              <tr>
+                <td>Spread</td>
+                <td>Number</td>
+                <td><p>Angle of spread for the particles</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Creates a pulse to spawn a group of particles</p></div>
+          <pre><code class="language-javascript">particle.Pulse = function(x, y, particleOptions, numberToSpawn, direction, spread) {
+	this.x = x;
+	this.y = y;
 
+	this.numberToSpawn = numberToSpawn;
+	this.particles = [];
+
+	this.particleOptions = particleOptions;
+	this.particleOptions.x = x;
+	this.particleOptions.y = y;
+
+	this.direction = direction || 0;
+	this.spread = spread || Math.PI;
+	this.particleOptions.mindirection = this.direction - this.spread / 2;
+	this.particleOptions.maxdirection = this.direction + this.spread / 2;
+
+	// Init particles
+	for(var i=0; i&lt;this.numberToSpawn; i++) {
+		this.particles.push(new enjin.particle.Particle(this.particleOptions));
+	}
+}</code></pre>
+          <section id="update">
+            <h1>update</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Pulse.prototype.update()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">Option name</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>DeltaTime</td>
+                <td>Number</td>
+                <td><p>Time since last update</p></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Update a Pulse&#39;s particles</p></div>
+          <pre><code class="language-javascript">particle.Pulse.prototype.update = function(dt) {
+	for(var i=0; i&lt;this.particles.length; i++) {
+		this.particles[i].update(dt);
+
+		if(!this.particles[i].isAlive) {
+			this.particles.splice(i, 1);
+		}
+	}
+}</code></pre>
+          <section id="draw">
+            <h1>draw</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>particle.Pulse.prototype.draw()</span><span>&nbsp;</span>
+            </p>
+          </section>
+          <div class="description"><p>Draw an Pulse&#39;s particles</p></div>
+          <pre><code class="language-javascript">particle.Pulse.prototype.draw = function() {
+	for(var i=0; i&lt;this.particles.length; i++) {
+		this.particles[i].draw();
+	}
+}
+
+
+// N.B. While you can make particles yourself, I'd reccomend using the library calls instead.
 module.exports = particle;</code></pre>
-          <div class="description"></div>
         </div>
       </div>
     </div>

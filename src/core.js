@@ -1,6 +1,9 @@
+/* Enjin, a small JavaScript game engine */
+
+// enjin namespace does need to be reserved
 window.enjin = {
-	version: "0.2508",
-	//60 fps
+	version: "0.2.5",
+	//60 fps, only used if requestAnimFrame isn't supported
 	defaultDelay: 1000/60,
 	
 	/**
@@ -8,13 +11,13 @@ window.enjin = {
 	 * @param {Object} Canvas Canvas for game to be played on
 	 */
 	attach: function(canvas) {
-		this.canvas = canvas;
-		this.width = canvas.width || 0;
-		this.height = canvas.height || 0;
-		this.ctx = this.canvas.getContext("2d");
+		enjin.canvas = canvas;
+		enjin.width = canvas.width || 0;
+		enjin.height = canvas.height || 0;
+		enjin.ctx = enjin.canvas.getContext("2d");
 
-		// Create the default state (basically trying to prevent errors incase user is stupid)
-		this.currentState = {
+		// Create the default state (basically trying to prevent errors)
+		enjin.currentState = {
 			update: function(dt) {},
 			render: function(dt) {}
 		};
@@ -28,17 +31,15 @@ window.enjin = {
 		enjin.frameID = requestAnimFrame(enjin.loop);
 
 		// Let the currentState know we're starting (resuming)
-		if(enjin.currentState.resume) {
-			enjin.currentState.resume();
+		if(enjin.currentState.start) {
+			enjin.currentState.start();
 		}
 	},
 
-	//A potentially better way to loop is here http://gameprogrammingpatterns.com/game-loop.html#play-catch-up
 	/**
 	 * Loop called by requestAnimFrame, finds dt then calls updates and renders
 	 */
 	loop: function() { 
-		// Can't use "this" here because it's being called in the window's context
 		enjin.now = performance.now();
 		enjin.dt = (enjin.now - enjin.previous)/1000 || 0;
 		enjin.previous = enjin.now;
@@ -53,7 +54,7 @@ window.enjin = {
 		enjin.currentState.update(enjin.dt);
 		enjin.currentState.render(enjin.dt);
 		
-		//this thing is pretty smart, it should use the monitors refresh rate as the fps
+		//this thing is pretty smart, it should use the monitor's refresh rate as the fps
 		enjin.frameID = requestAnimFrame(enjin.loop);
 	},
 
@@ -64,24 +65,25 @@ window.enjin = {
 		cancelAnimFrame(this.frameID);
 
 		// Let the currentState know we're stopping (pausing)
-		if(enjin.currentState.pause) {
-			enjin.currentState.pause();
+		if(enjin.currentState.stop) {
+			enjin.currentState.stop();
 		}
 	},
 
 	/**
 	 * Helper for watching window resizing
+	 * @param {Function} Callback Function to call when the window changes size
 	 */
 	watchForResize: function(func) {
 		window.onresize = func;
 	}
 };
 
-
+// Library requires
 enjin.util = require('./libs/util');
-enjin.Camera = require('./libs/camera'); //kool
-enjin.timer = require('./libs/timer'); //not kool
-enjin.collision = require('./libs/collision'); //kool
+enjin.Camera = require('./libs/camera');
+enjin.timer = require('./libs/timer');
+enjin.collision = require('./libs/collision');
 enjin.state = require('./libs/state');
 enjin.particle = require('./libs/particle');
 
@@ -92,32 +94,21 @@ enjin.particle = require('./libs/particle');
 /* ----------[ POLLYFILLS ]---------- */
 
 window.requestAnimFrame = window.requestAnimationFrame
-    || window.webkitRequestAnimationFrame
-    || window.msRequestAnimationFrame
-    || window.mozRequestAnimationFrame 
-    || window.oRequestAnimationFrame  
-    || function(callback) { return window.setTimeout(callback, enjin.defaultDelay); }; 
+		|| window.webkitRequestAnimationFrame
+		|| window.msRequestAnimationFrame
+		|| window.mozRequestAnimationFrame 
+		|| window.oRequestAnimationFrame	
+		|| function(callback) { return window.setTimeout(callback, enjin.defaultDelay); }; 
 
 window.cancelAnimFrame = window.cancelAnimationFrame
-    || window.webkitCancelAnimationFrame 
-    || window.msCancelAnimationFrame 
-    || window.mozCancelAnimationFrame 
-    || window.oCancelAnimationFrame 
-    || function(id) { clearTimeout(id); };
+		|| window.webkitCancelAnimationFrame 
+		|| window.msCancelAnimationFrame 
+		|| window.mozCancelAnimationFrame 
+		|| window.oCancelAnimationFrame 
+		|| function(id) { clearTimeout(id); };
 
 window.performance.now = performance.now
 	|| performance.webkitNow
 	|| performance.msNow
 	|| performance.mozNow
 	|| function() { return Date.now() || +(new Date()); };
-
-
-
-
-
-
-
-/*
-
-
-*/

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width" charset="utf-8">
-    <title>mr-doc</title>
+    <title>Enjin</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/cayman.min.css">
     <link rel="stylesheet" href="../css/prism.min.css">
@@ -22,7 +22,7 @@
     </div>
     <header id="overview" class="jumbotron subhead">
       <div class="container">
-        <h1>mr-doc</h1>
+        <h1>Enjin</h1>
         <p class="lead"></p>
       </div>
     </header>
@@ -43,10 +43,6 @@
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
               <li><a href="#AABB"><i class="alert alert-info"></i><span>AABB</span></a>
-              </li>
-              <li><a href="#AABBObject"><i class="alert alert-info"></i><span>AABBObject</span></a>
-              </li>
-              <li><a href="#circle"><i class="alert alert-info"></i><span>circle</span></a>
               </li>
               <li><a href="#circle"><i class="alert alert-info"></i><span>circle</span></a>
               </li>
@@ -71,12 +67,12 @@
             </thead>
             <tbody>
               <tr>
-                <td>X</td>
+                <td>X1</td>
                 <td>Number</td>
                 <td><p>X coordinate of top left corner of first object</p></td>
               </tr>
               <tr>
-                <td>Y</td>
+                <td>Y1</td>
                 <td>Number</td>
                 <td><p>Y coordinate of top left corner of first object</p></td>
               </tr>
@@ -91,22 +87,22 @@
                 <td><p>Height of first object</p></td>
               </tr>
               <tr>
-                <td>X</td>
+                <td>X2</td>
                 <td>Number</td>
                 <td><p>X coordinate of top left corner of second object</p></td>
               </tr>
               <tr>
-                <td>Y</td>
+                <td>Y2</td>
                 <td>Number</td>
                 <td><p>Y coordinate of top left corner of second object</p></td>
               </tr>
               <tr>
-                <td>Width</td>
+                <td>Width2</td>
                 <td>Number</td>
                 <td><p>Width of second object</p></td>
               </tr>
               <tr>
-                <td>Height</td>
+                <td>Height2</td>
                 <td>Number</td>
                 <td><p>Height of second object</p></td>
               </tr>
@@ -120,43 +116,6 @@
           <div class="description"><p>Axis aligned bounding box collision check</p></div>
           <pre><code class="language-javascript">collision.AABB = function(x1, y1, w1, h1, x2, y2, w2, h2) {
 	return (x1 &lt; x2 + w2 &amp;&amp; x1 + w1 &gt; x2 &amp;&amp; y1 &lt; y2 + h2 &amp;&amp; h1 + y1 &gt; y2);
-}</code></pre>
-          <section id="AABBObject">
-            <h1>AABBObject</h1>
-            <h5 class="subheader"></h5>
-            <p>
-              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>collision.AABBObject()</span><span>&nbsp;</span>
-            </p>
-          </section>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th style="width:20%">Option name</th>
-                <th style="width:20%">Type</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Object1</td>
-                <td>Object</td>
-                <td><p>First object with attributes x, y, width (or w), and height (or h)</p></td>
-              </tr>
-              <tr>
-                <td>Object2</td>
-                <td>Object</td>
-                <td><p>Second object with attributes x, y, width (or w), and height (or h)</p></td>
-              </tr>
-              <tr>
-                <td>return</td>
-                <td>Boolean</td>
-                <td><p>Whether or not two objects have collided</p></td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="description"><p>Axis aligned bounding box collision check using objects</p></div>
-          <pre><code class="language-javascript">collision.AABBObject = function(obj1, obj2) {
-	return (obj1.x &lt; obj2.x + (obj2.width || obj2.w) &amp;&amp; obj1.x + (obj1.width || obj1.w) &gt; obj2.x &amp;&amp; obj1.y &lt; obj2.y + (obj2.height || obj2.h) &amp;&amp; (obj1.height || obj1.h) + obj1.y &gt; obj2.y);
 }</code></pre>
           <section id="circle">
             <h1>circle</h1>
@@ -214,43 +173,6 @@
           <div class="description"><p>Bounding circle collision check</p></div>
           <pre><code class="language-javascript">collision.circle = function(x1, y1, r1, x2, y2, r2) {
 	return (x2-x1)^2 + (y1-y2)^2 &lt;= (r1+r2)^2;
-}</code></pre>
-          <section id="circle">
-            <h1>circle</h1>
-            <h5 class="subheader"></h5>
-            <p>
-              <div class="label label-info radius ctx-type">method</div><span>&nbsp;</span><span>collision.circle()</span><span>&nbsp;</span>
-            </p>
-          </section>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th style="width:20%">Option name</th>
-                <th style="width:20%">Type</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Object1</td>
-                <td>Object</td>
-                <td><p>First object with attributes x, y, and radius (or r)</p></td>
-              </tr>
-              <tr>
-                <td>Object2</td>
-                <td>Object</td>
-                <td><p>First object with attributes x, y, and radius (or r)</p></td>
-              </tr>
-              <tr>
-                <td>return</td>
-                <td>Boolean</td>
-                <td><p>Whether or not two objects have collided</p></td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="description"><p>Bounding circle collision check using objects</p></div>
-          <pre><code class="language-javascript">collision.circle = function(obj1, obj2) {
-	return (obj2.x-obj1.x)^2 + (obj1.y-obj2.y)^2 &lt;= ((obj1.radius || obj1.r)+(obj2.radius || obj2.r))^2;
 }
 
 module.exports = collision;</code></pre>

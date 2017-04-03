@@ -1,35 +1,76 @@
 /**
  * Create a new Camera instance
- * @param {Object} Params Params to start camera off with
+ * @param {Number} X X coordinate of camera center
+ * @param {Number} Y Y coordinate of camera center
+ * @param {Number} Scale Scale of camera
+ * @param {Number} Rotation Rotation of camera (in radians)
  * @return {Object} A Camera Object with the given Params
  */
-var Camera = function(params) {
+var Camera = function(x, y, scale, rotation) {
+	if(!enjin.ctx) {
+		console.error("enjin needs a rendering context before it can have a Camera, did you enjin.atach(canvas)?");
+		return;
+	}
 	//everything needed for default camera
-	this.x = params.x || 0;
-	this.y = params.y || 0;
-	this.scale = params.scale || 1;
-	this.rotation = params.rotation || 0;
+	this.x = x || 0;
+	this.y = y || 0;
+	this.scale = scale || 1;
+	this.rotation = rotation || 0;
+	this.layers = {
+		"main": new this.Layer(1)
+	};
 }
+
+/**
+ * Create a new Layer instance
+ * @param {Number} TranslationScale Scalar to mulitply translation by
+ */
+Camera.prototype.Layer = function(translationScale) {
+	this.translationScale = translationScale;
+}
+
+/**
+ * Apply Layer's positioning (Don't call this directly, use Camera.apply("LayerName"))
+ * @param {Object} Camera Camera whose positioning we should apply
+ */
+Camera.prototype.Layer.prototype.apply = function(camera) {
+	var centerX = enjin.width/(2*camera.scale);
+	var centerY = enjin.height/(2*camera.scale);
+
+	enjin.ctx.save();
+	enjin.ctx.scale(camera.scale, camera.scale);
+	enjin.ctx.translate(centerX, centerY);
+	enjin.ctx.rotate(camera.rot);
+	enjin.ctx.translate(-camera.x * this.translationScale, -camera.y * this.translationScale);
+};
+
+/**
+ * Create a new Camera Layer the easy way
+ * @param {String} LayerName Name of layer
+ * 2param {Number} TranslationScale Scalar to mulitply translation by
+ */
+Camera.prototype.newLayer = function(layerName, translationScale) {
+	this.layers[layerName] = new this.Layer(translationScale);
+};
 
 /**
  * Apply Camera's positioning
+ * @param {String} LayerName Name of Layer to apply
  */
-Camera.prototype.attach = function() {
-	var centerX = enjin.width/(2*this.scale);
-	var centerY = enjin.height/(2*this.scale);
-
-	enjin.ctx.save();
-	enjin.ctx.scale(this.scale, this.scale);
-	enjin.ctx.translate(centerX, centerY);
-	enjin.ctx.rotate(this.rot);
-	enjin.ctx.translate(-this.x, -this.y);
+Camera.prototype.apply = function(layerName) {
+	if(layerName) { // If we're given a specific layer to draw
+		this.layers[layerName].apply(this);
+	}
+	else { // Otherwise just draw the main layer
+		this.layers["main"].apply(this);
+	}
 }
 
 /**
- * Detach Camera's positioning
+ * Remove Camera's positioning
  */
-Camera.prototype.detach = function() {
-	//save and restore use a stack so it should be good
+Camera.prototype.remove = function() {
+	// Remove is a pretty generic call and so it doesn't nee to be the Camera.Layer class
 	enjin.ctx.restore();
 }
 
@@ -92,26 +133,26 @@ Camera.prototype.scaleTo = function(scale) {
  * @param {Number} PointY Y coordinate to scale to
  */
 Camera.prototype.scaleToPoint = function(scalar, pointx, pointy) {
-	var goodx = enjin.canvas.width/2 - pointx
-	var goody = enjin.canvas.height/2 - pointy
-	var movex = (goodx/(this.scale * scalar) - goodx/this.scale);
-	var movey = (goody/(this.scale * scalar) - goody/this.scale);
-	this.move(movex, movey)
-	this.scaleBy(scalar)
-};
+	var relCenterX = enjin.canvas.width/2 - pointx
+	var relCenterY = enjin.canvas.height/2 - pointy
+	var moveX = (relCenterX/(this.scale * scalar) - relCenterX/this.scale);
+	var moveY = (relCenterY/(this.scale * scalar) - relCenterY/this.scale);
+	this.move(moveX, moveY);
+	this.scaleBy(scalar);
+}
 
 /**
  * Convert Camera coordinates to Map coordinates
- * @param {Number} X X coordinate of camera you wish to convert
- * @param {Number} X Y coordinate of camera you wish to convert
+ * @param {Number} X X coordinate of camera you want to convert
+ * @param {Number} X Y coordinate of camera you want to convert
  * @return {Object} X and Y value in Map coordinates
  */
 Camera.prototype.toMapCoords = function(x, y) {
 	x = (x - this.canvas.getWidth/2) / this.scale;
 	y = (y - this.canvas.getHeight/2) / this.scale;
 
-	var cos = Math.cos(-this.rotation),
-		sin = Math.sin(-this.rotation);
+	var cos = Math.cos(-this.rotation);
+	var sin = Math.sin(-this.rotation);
 
 	x = cos*x - sin*y;
 	y = sin*x + cos*y;
@@ -124,15 +165,15 @@ Camera.prototype.toMapCoords = function(x, y) {
 
 /**
  * Convert Map coordinates to Camera coordinates
- * @param {Number} X X coordinate of Map you wish to convert
- * @param {Number} Y Y coordinate of Map you wish to convert
+ * @param {Number} X X coordinate of Map you want to convert
+ * @param {Number} Y Y coordinate of Map you want to convert
  * @return {Object} X and Y value in Camera coordinates
  */
 Camera.prototype.toCameraCoords = function(x, y) {
 	x = x - this.x;
 	y = y - this.y;
-	var cos = Math.cos(this.rotation),
-		sin = Math.sin(this.rotation);
+	var cos = Math.cos(this.rotation);
+	var sin = Math.sin(this.rotation);
 
 	x = cos*x - sin*y;
 	y = sin*x + cos*y;
@@ -140,7 +181,7 @@ Camera.prototype.toCameraCoords = function(x, y) {
 	return {
 		x: x*this.scale + this.canvas.getWidth/2,
 		y: y*this.scale + this.canvas.getHeight/2
-	};
+	}
 }
 
 module.exports = Camera;
