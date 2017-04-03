@@ -14,12 +14,17 @@ It has all the features you'd expect from an engine, and can easily be extended 
  * Full JDOC documentation
  * Small footprint (~10 kb minified)
 
+## Documentation  
+Full documentation is available at [https://cjenright.github.io/enjin/docs/](https://cjenright.github.io/enjin/docs/)  
+If you want to generate it yourself make sure you ```npm install``` and in the project directory run ```npm run docs```.
+
 ## Examples  
-Check out example code in the [Example folder](https://github.com/CJEnright/enjin/example), and see them in action at the [showcase](cjenright.github.io/enjin/showcase).
+Check out some example code in the [Example folder](https://github.com/CJEnright/enjin/example).
 
 ## Showcase  
 ### Planets  
-![Planet Preview](TODO)  
+![Planet Preview](http://imgur.com/a/oKeO4)  
+[Check it out here](https://cjenright.github.io/enjin/showcase/planets/planets.html)
 
 More to come soon...  
 
