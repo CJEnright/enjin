@@ -23,7 +23,7 @@ Check out some example code in the [Example folder](https://github.com/CJEnright
 
 ## Showcase  
 ### Planets  
-![Planet Preview](http://imgur.com/UCSIP6U)  
+![Planet Preview](http://imgur.com/UCSIP6U.png)  
 [Check it out here](https://cjenright.github.io/enjin/showcase/planets/planets.html)
 
 More to come soon...  
