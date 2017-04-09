@@ -7,7 +7,7 @@ module.exports = function(grunt) {
           port: 8100
         }
       }
-    },
+    }, 
     watch: {
       all: {
         options: {
